@@ -44,6 +44,10 @@ This project started from TouHou fan party of BUAA. Then we set a greater goal f
 
 对较大规模的东方Project聚会，请联系页面底部的开发者。
 
+This project is free to use for all TouHou Project fan parties that do not charge admission fees and TouHou Project related associations in universities and high schools.
+
+For larger Conferences, please contact the developers at the bottom of the page.
+
 # 贡献 Contributing
 
 ## 通过GitHub via GitHub
