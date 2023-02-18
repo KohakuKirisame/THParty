@@ -28,7 +28,7 @@ This project started from TouHou fan party of BUAA. Then we set a greater goal f
 - 聚会报名 Participate Party
 - 线下互动：你划我猜 Offline Activity: Dance&Gauss
 - 线下互动：现场答题 Offline Activity: Quiz
-- 线下互动：非想天则赛程 Offline Activity: DaZe Contest
+- 线下互动：非想天则赛程 Offline Activity: Hisoutensoku Contest Progress
 - 聚会节目单 Party Programmes
 - 聚会节目报名 Sign up Party Pragrammes
 
