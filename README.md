@@ -1,66 +1,88 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://img1.imgtp.com/2023/02/18/2UGtPhVj.png" width="400"></a></p>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+<a href="https://afdian.net/a/NebulaShrine"><img src="https://afdian.moeci.com/60660cbcae0f11edbdd552540025c377/dgr5W9yuYHfNjJE6VUe8PaFXmhqGvbkR/badge.svg" alt="Aifadian"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/github/license/KohakuCao/THParty.svg" alt="Total Downloads"></a>
 </p>
 
-## About Laravel
+# THParty.Fun
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+THParty.Fun是一个开源的东方Project同人聚会信息聚合站和聚会线下互动活动工具站。
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+本项目最初是为了服务北京航空航天大学东方Project例会「空之航路」而建立，而后拓展了更加宏大的目标。
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+THParty.Fun is an open source project that gather TouHou Project fan parties and provide offline interactive game tools.
 
-## Learning Laravel
+This project started from TouHou fan party of BUAA. Then we set a greater goal for this project.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# 功能 Functions
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 已实现 Released
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- none
 
-## Laravel Sponsors
+## 待实现 Developing
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+- 用户系统 User System
+- 聚会创建 Create Party
+- 聚会报名 Participate Party
+- 线下互动：你划我猜 Offline Activity: Dance&Gauss
+- 线下互动：现场答题 Offline Activity: Quiz
+- 线下互动：非想天则赛程 Offline Activity: DaZe Contest
+- 聚会节目单 Party Programmes
+- 聚会节目报名 Sign up Party Pragrammes
 
-### Premium Partners
+# 项目引用 Libraries
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- ![https://laravel.com/](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+- ![https://jquery.com/](https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white)
+- ![https://v5.bootcss.com](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
 
-## Contributing
+# 使用 Usage
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+本项目免费供所有不收取门票费用的东方Project同人聚会和高校、高中的东方Project相关社团使用。
 
-## Code of Conduct
+对较大规模的东方Project聚会，请联系页面底部的开发者。
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 贡献 Contributing
 
-## Security Vulnerabilities
+## 通过GitHub via GitHub
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+你需要将本项目Fork后修改并提交Pull Request。
 
-## License
+你需要遵守下列代码规范：
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- 低耦合；
+- echo需要加括号，return/include/require/include_once/require_once不加括号；
+- 命名规则：变量名、函数名、方法名使用小驼峰法，类名使用大驼峰法；
+- 使用\n（LF）作为换行符;
+- 详细的注释，包括类和方法的功能与调用方式；
+- 使用制表符（Tab）来缩进；
+- 代码块大括号前不换行。
+
+You need to code after Fork and submit Pull Requests.
+
+You need to comply with the following code specifications:
+
+- Low coupling;
+- echo needs brackets, return/include/require/include_once/require_once without parentheses;
+- Naming rules: variable name, function name and method name use camelCase, and class name use UpperCamelCase;
+- Detailed comments, including the functions and invocation methods of classes and methods;
+- Use \n (LF);
+- Use tabs to indent;
+- Code block does not wrap before braces.
+
+## 加入开发团队 Join Us
+
+[发送邮件 Send mail: kohaku@buaa.edu.cn](mailto:kohaku@buaa.edu.cn?subject=申请加入THParty.Fun开发团队)
+
+联系QQ：2991251742
+
+正在招募的职位：
+
+- Web前端开发 Web Frontend Developer
+- Web后端开发 Web Backend Developer
+- UI设计 UI Designer
+- 法律顾问 Legal Advisor
+- 客户服务 Customer Service
+
