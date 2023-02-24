@@ -88,6 +88,9 @@ You need to comply with the following code specifications:
 - Web前端开发 Web Frontend Developer
 - Web后端开发 Web Backend Developer
 - UI设计 UI Designer
+- Android开发 Android Developer
+- iOS开发 iOS Developer
+- 小程序开发 Mini Program Developer
 - 法律顾问 Legal Advisor
 - 客户服务 Customer Service
 
