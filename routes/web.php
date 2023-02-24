@@ -13,6 +13,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+//子域名路由
+/*
+Route::domain('{act}.thparty.fun')->group(function () {
+    Route::get('/', function ($act) {
+        if($act == 'www'){
+            return redirect("https://thparty.fun");
+        }
+        return redirect("https://".$act.'.edu.cn');
+    });
+});*/
+
+//本站路由
+Route::domain("www.thparty.fun")->group(function (){
+	Route::get('/', function () {
+		return view('beian');
+	});
 });
+Route::domain('thparty.fun')->group(function () {
+    Route::get('/', function () {
+        return view('beian');
+    });
+    Route::get('/About', function () {
+        return view('about');
+    });
+});
+

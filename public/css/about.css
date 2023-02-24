@@ -1,0 +1,25 @@
+.bgImg{
+	background-image: url("/storage/img/104050170_p0.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 320px;
+}
+.bgFilter{
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 320px;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	margin: 0 !important;
+}
+.ti{
+	z-index: 1;
+	text-shadow: 0 0 10px #ffffff;
+	font-size: 4rem;
+}
+
+.ani{
+	transition: all 0.3s ease-in-out;
+}
