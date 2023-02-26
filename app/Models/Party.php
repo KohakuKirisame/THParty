@@ -1,17 +1,21 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
 
-class Party extends \Illuminate\Database\Eloquent\Model {
+class Party extends Model {
+
 
 	protected $fillable=[
 		'title',
 		'subtitle',
+		'type',
 		'start',
 		'end',
 		'location',
 		'domain',
 		'leader',
+		'actived',
 	];
 
 	public function user(){
