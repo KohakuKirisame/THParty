@@ -53,10 +53,10 @@ class PartyController extends BaseController {
 				'end.required' => '咲夜表示你对时间的理解有所欠缺，活动结束时间不能为空',
 				'end.date' => '活动结束时间格式错误',
 				'location.required' => '地点不能进入幻想，活动地点不能为空',
-				'location.max' => '活动地点过长',
-				'domain.required' => '活动域名不能为空',
-				'domain.max' => '活动域名过长',
-				'domain.alpha_dash' => '活动域名只能包含字母、数字、破折号（-）以及下划线（_）',
+				'location.max' => '东方活动地点过长',
+				'domain.required' => '东方活动域名不能为空',
+				'domain.max' => '东方活动域名过长',
+				'domain.alpha_dash' => '东方活动域名只能包含字母、数字、破折号（-）以及下划线（_）',
 			]);
 			//验证通过，创建活动
 			$party = new Party();
