@@ -56,7 +56,7 @@ class PartyController extends BaseController {
 				'location.max' => '就算是铃仙的全名也没这么长！',
 				'domain.required' => '东方活动域名不能为空',
 				'domain.max' => '阿求的岁月史书无法记录过长的域名',
-				'domain.alpha_dash' => '阿求的岁月史书所记录的域名只能包含字母、数字、破折号（-）以及下划线（_）',
+				'domain.alpha_dash' => '阿求的岁月史书所记录的域名只能包含字母、数字、破折号（——）以及下划线（_）',
 			]);
 			//验证通过，创建活动
 			$party = new Party();
