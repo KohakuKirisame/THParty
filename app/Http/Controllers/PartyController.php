@@ -47,7 +47,7 @@ class PartyController extends BaseController {
 				'title.max' => '活动名称过长啦！',
 				'subtitle.max' => '活动副标题过长啦',
 				'type.required' => '活动类型不能为空',
-				'type.numeric' => '不要用F12乱改前端',
+				'type.numeric' => '⑨!不要用F12乱改前端!',
 				'start.required' => '咲夜表示你对时间的理解有所欠缺，活动开始时间不能为空',
 				'start.date' => '活动开始时间格式错误',
 				'end.required' => '咲夜表示你对时间的理解有所欠缺，活动结束时间不能为空',
