@@ -53,7 +53,7 @@ class PartyController extends BaseController {
 				'end.required' => '咲夜表示你对时间的理解有所欠缺，活动结束时间不能为空',
 				'end.date' => '活动结束时间格式错误',
 				'location.required' => '地点不能进入幻想，活动地点不能为空',
-				'location.max' => '东方活动地点过长',
+				'location.max' => '就算是铃仙的全名也没这么长！',
 				'domain.required' => '东方活动域名不能为空',
 				'domain.max' => '东方活动域名过长',
 				'domain.alpha_dash' => '东方活动域名只能包含字母、数字、破折号（-）以及下划线（_）',
