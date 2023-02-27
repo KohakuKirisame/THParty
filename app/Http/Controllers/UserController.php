@@ -110,4 +110,40 @@ class UserController extends BaseController{
 			])->withInput();
 		}
 	}
+	public function changeUserInfo(Request $request) {
+		/**
+		 * 更改用户名
+		 * @param Request $request
+		 * 包含修改后的 用户名、邮箱、QQ号、个人简介、个人签名
+		 * @return \Illuminate\Routing\Redirector
+		 * 返回重定向
+		 */
+		if (Auth::check()) {
+			$uid = Auth::id();
+			$credentials = $request->validate([
+				'username' => ['required', 'max:255'],
+				'email' => ['required', 'email', 'max:255'],
+				'qq' => ['numeric','integer','min:100000','max:9999999999999'],
+				'introduction' => [],
+				'sign' => ['max:255']
+			],[
+				'username.required' => '你是？',
+				'username.max' => '名称过长',
+				'email.required' => '幻想乡也有邮箱啦',
+				'email.max' => '就没有短一点的邮箱吗',
+				'qq.numeric' => '你这QQ丁真吗',
+				'qq.max' => '你这QQ丁真吗',
+				'sign' => '短些撒'
+			]);
+			$u = User::where(["id"=>$uid])->first();
+			$u->username = $credentials['username'];
+			$u->email = $credentials['email'];
+			$u->qq = $credentials['qq'];
+			$u->introduction = $credentials['introduction'];
+			$u->sign = $credentials['sign'];
+			$u->save();
+			return back()->with('message','修改成功喵！');
+		}
+		return back()->with('message','操作被摩多罗神必吞掉了，，，');
+	}
 }
