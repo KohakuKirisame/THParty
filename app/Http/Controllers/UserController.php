@@ -203,6 +203,11 @@ class UserController extends BaseController{
 	}
 
 	public function loginPage(){
+		/**
+		 * 登录页面
+		 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+		 * 返回登录页面
+		 */
 		if(Auth::check()){
 			return back();
 		}else{
