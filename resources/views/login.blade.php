@@ -5,8 +5,6 @@
 	<title>登录 - THParty.Fun</title>
 </head>
 <body>
-<div id="bgCover"></div>
-@include("nav")
 <div class="container my-5" id="mainContainer">
 	<div class="row justify-content-center">
 		<div class="card shadow-lg col-12 col-md-9 col-lg-6 opacity-75">
@@ -15,10 +13,10 @@
 				<form method="post" id="loginForm" action="/Actions/Login">
 					@csrf
 					<div class="mb-3">
-						<input type="text" class="form-control" name="username" id="username" placeholder="用户名" onkeydown="sub(event);">
+						<input type="text" class="form-control" name="phone" id="phone" placeholder="手机号" />
 					</div>
 					<div class="mb-3">
-						<input type="password" class="form-control" name="password" id="password" placeholder="密码" onkeydown="sub(event);">
+						<input type="password" class="form-control" name="password" id="password" placeholder="密码" />
 					</div>
 
 					<div class="mb-3 form-check">

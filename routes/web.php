@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PartyController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,4 +40,15 @@ Route::domain('thparty.fun')->group(function () {
     Route::get('/About', function () {
         return view('about');
     });
+	Route::get('/Register', function () {
+		return view('register');
+	});
+	Route::get('/Login',[UserController::class,"loginPage"]);
+
+	Route::prefix("Actions")->group(function (){
+		Route::post("/SendSMSCaptcha",[UserController::class,'sendCaptcha']);
+		Route::post("/Register",[UserController::class,'register']);
+		Route::match(['get','post'],'/Logout',[UserController::class,'logout']);
+		Route::post('/Login',[UserController::class,'login']);
+	});
 });
