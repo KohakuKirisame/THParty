@@ -52,3 +52,24 @@
 @include('components.footer')
 </body>
 </html>
+<script>
+	$("#button-addon2").on("click",function(){
+
+
+		$("#button-addon2").html("120秒后重新获取验证码");
+		$("#button-addon2").attr("disabled","disabled");
+		var t = 119;
+		var timeStr = '';
+		var countDown = setInterval(function (){
+			if(t == 0){
+				$("#button-addon2").html("发送验证码");
+				$("#button-addon2").removeAttribute("disabled","disabled");
+				clearInterval(countDown);
+				return ;
+			}
+			timeStr = t + "秒后重新获取验证码";
+			$("#button-addon2").html(timeStr);
+			t--;
+		},1000);
+	})
+</script>
