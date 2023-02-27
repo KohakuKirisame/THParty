@@ -11,8 +11,8 @@
 	<div class="bgFilter"></div>
 	<h1 class="text-center py-5 m-auto text-white ti">关于本站</h1>
 </div>
-<div class="container mb-5">
-	<div class="row">
+<div class="container mb-5 pb-5">
+	<div class="row my-4">
 		<div class="card rounded col-12 my-3 shadow-lg">
 			<div class="card-body">
 				<h5 class="card-title">THParty.Fun</h5>

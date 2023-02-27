@@ -40,6 +40,3 @@ Route::domain('thparty.fun')->group(function () {
         return view('about');
     });
 });
-
-Route::get("/U",[PartyController::class,'createParty']);
-
