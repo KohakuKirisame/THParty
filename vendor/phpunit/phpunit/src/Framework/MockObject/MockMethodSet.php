@@ -19,19 +19,19 @@ use function strtolower;
 final class MockMethodSet
 {
     /**
-     * @psalm-var array<string,MockMethod>
+     * @var MockMethod[]
      */
-    private array $methods = [];
+    private $methods = [];
 
     public function addMethods(MockMethod ...$methods): void
     {
         foreach ($methods as $method) {
-            $this->methods[strtolower($method->methodName())] = $method;
+            $this->methods[strtolower($method->getName())] = $method;
         }
     }
 
     /**
-     * @psalm-return list<MockMethod>
+     * @return MockMethod[]
      */
     public function asArray(): array
     {

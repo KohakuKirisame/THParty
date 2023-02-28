@@ -14,10 +14,25 @@ namespace SebastianBergmann\LinesOfCode;
  */
 final class LinesOfCode
 {
-    private int $linesOfCode;
-    private int $commentLinesOfCode;
-    private int $nonCommentLinesOfCode;
-    private int $logicalLinesOfCode;
+    /**
+     * @var int
+     */
+    private $linesOfCode;
+
+    /**
+     * @var int
+     */
+    private $commentLinesOfCode;
+
+    /**
+     * @var int
+     */
+    private $nonCommentLinesOfCode;
+
+    /**
+     * @var int
+     */
+    private $logicalLinesOfCode;
 
     /**
      * @throws IllogicalValuesException

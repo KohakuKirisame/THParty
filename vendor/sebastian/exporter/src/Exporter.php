@@ -11,6 +11,8 @@ namespace SebastianBergmann\Exporter;
 
 use function bin2hex;
 use function count;
+use function function_exists;
+use function get_class;
 use function get_resource_type;
 use function gettype;
 use function implode;
@@ -24,15 +26,15 @@ use function is_string;
 use function mb_strlen;
 use function mb_substr;
 use function preg_match;
-use function spl_object_id;
+use function spl_object_hash;
 use function sprintf;
 use function str_repeat;
 use function str_replace;
+use function strlen;
+use function substr;
 use function var_export;
-use BackedEnum;
 use SebastianBergmann\RecursionContext\Context;
 use SplObjectStorage;
-use UnitEnum;
 
 /**
  * A nifty utility for visualizing PHP variables.
@@ -45,7 +47,7 @@ use UnitEnum;
  * print $exporter->export(new Exception);
  * </code>
  */
-final class Exporter
+class Exporter
 {
     /**
      * Exports a value as a string.
@@ -59,24 +61,32 @@ final class Exporter
      *  - Strings are always quoted with single quotes
      *  - Carriage returns and newlines are normalized to \n
      *  - Recursion and repeated rendering is treated properly
+     *
+     * @param int $indentation The indentation level of the 2nd+ line
+     *
+     * @return string
      */
-    public function export(mixed $value, int $indentation = 0): string
+    public function export($value, $indentation = 0)
     {
         return $this->recursiveExport($value, $indentation);
     }
 
-    public function shortenedRecursiveExport(array &$data, Context $context = null): string
+    /**
+     * @param array<mixed> $data
+     * @param Context      $context
+     *
+     * @return string
+     */
+    public function shortenedRecursiveExport(&$data, Context $context = null)
     {
         $result   = [];
-        $exporter = new self;
+        $exporter = new self();
 
         if (!$context) {
             $context = new Context;
         }
 
         $array = $data;
-
-        /* @noinspection UnusedFunctionResultInspection */
         $context->add($data);
 
         foreach ($array as $key => $value) {
@@ -105,40 +115,33 @@ final class Exporter
      *
      * Newlines are replaced by the visible string '\n'.
      * Contents of arrays and objects (if any) are replaced by '...'.
+     *
+     * @return string
+     *
+     * @see    SebastianBergmann\Exporter\Exporter::export
      */
-    public function shortenedExport(mixed $value): string
+    public function shortenedExport($value)
     {
         if (is_string($value)) {
             $string = str_replace("\n", '', $this->export($value));
 
-            if (mb_strlen($string) > 40) {
-                return mb_substr($string, 0, 30) . '...' . mb_substr($string, -7);
+            if (function_exists('mb_strlen')) {
+                if (mb_strlen($string) > 40) {
+                    $string = mb_substr($string, 0, 30) . '...' . mb_substr($string, -7);
+                }
+            } else {
+                if (strlen($string) > 40) {
+                    $string = substr($string, 0, 30) . '...' . substr($string, -7);
+                }
             }
 
             return $string;
         }
 
-        if ($value instanceof BackedEnum) {
-            return sprintf(
-                '%s Enum (%s, %s)',
-                $value::class,
-                $value->name,
-                $this->export($value->value)
-            );
-        }
-
-        if ($value instanceof UnitEnum) {
-            return sprintf(
-                '%s Enum (%s)',
-                $value::class,
-                $value->name
-            );
-        }
-
         if (is_object($value)) {
             return sprintf(
                 '%s Object (%s)',
-                $value::class,
+                get_class($value),
                 count($this->toArray($value)) > 0 ? '...' : ''
             );
         }
@@ -156,8 +159,10 @@ final class Exporter
     /**
      * Converts an object to an array containing all of its private, protected
      * and public properties.
+     *
+     * @return array
      */
-    public function toArray(mixed $value): array
+    public function toArray($value)
     {
         if (!is_object($value)) {
             return (array) $value;
@@ -193,9 +198,9 @@ final class Exporter
         // above (fast) mechanism nor with reflection in Zend.
         // Format the output similarly to print_r() in this case
         if ($value instanceof SplObjectStorage) {
-            foreach ($value as $_value) {
-                $array['Object #' . spl_object_id($_value)] = [
-                    'obj' => $_value,
+            foreach ($value as $key => $val) {
+                $array[spl_object_hash($val)] = [
+                    'obj' => $val,
                     'inf' => $value->getInfo(),
                 ];
             }
@@ -206,8 +211,16 @@ final class Exporter
 
     /**
      * Recursive implementation of export.
+     *
+     * @param mixed                                       $value       The value to export
+     * @param int                                         $indentation The indentation level of the 2nd+ line
+     * @param \SebastianBergmann\RecursionContext\Context $processed   Previously processed objects
+     *
+     * @return string
+     *
+     * @see    SebastianBergmann\Exporter\Exporter::export
      */
-    private function recursiveExport(mixed &$value, int $indentation, ?Context $processed = null): string
+    protected function recursiveExport(&$value, $indentation, $processed = null)
     {
         if ($value === null) {
             return 'null';
@@ -248,25 +261,6 @@ final class Exporter
                 'resource(%d) of type (%s)',
                 $value,
                 get_resource_type($value)
-            );
-        }
-
-        if ($value instanceof BackedEnum) {
-            return sprintf(
-                '%s Enum #%d (%s, %s)',
-                $value::class,
-                spl_object_id($value),
-                $value->name,
-                $this->export($value->value, $indentation)
-            );
-        }
-
-        if ($value instanceof UnitEnum) {
-            return sprintf(
-                '%s Enum #%d (%s)',
-                $value::class,
-                spl_object_id($value),
-                $value->name
             );
         }
 
@@ -321,13 +315,13 @@ final class Exporter
         }
 
         if (is_object($value)) {
-            $class = $value::class;
+            $class = get_class($value);
 
-            if ($processed->contains($value)) {
-                return sprintf('%s Object #%d', $class, spl_object_id($value));
+            if ($hash = $processed->contains($value)) {
+                return sprintf('%s Object &%s', $class, $hash);
             }
 
-            $processed->add($value);
+            $hash   = $processed->add($value);
             $values = '';
             $array  = $this->toArray($value);
 
@@ -344,7 +338,7 @@ final class Exporter
                 $values = "\n" . $values . $whitespace;
             }
 
-            return sprintf('%s Object #%d (%s)', $class, spl_object_id($value), $values);
+            return sprintf('%s Object &%s (%s)', $class, $hash, $values);
         }
 
         return var_export($value, true);

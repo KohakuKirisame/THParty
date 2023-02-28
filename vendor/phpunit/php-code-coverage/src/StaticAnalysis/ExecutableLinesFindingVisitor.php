@@ -29,23 +29,30 @@ use PhpParser\NodeVisitorAbstract;
  */
 final class ExecutableLinesFindingVisitor extends NodeVisitorAbstract
 {
-    private int $nextBranch = 0;
-    private readonly string $source;
+    /**
+     * @var int
+     */
+    private $nextBranch = 0;
 
     /**
-     * @psalm-var array<int, int>
+     * @var string
      */
-    private array $executableLinesGroupedByBranch = [];
+    private $source;
 
     /**
-     * @psalm-var array<int, bool>
+     * @var array<int, int>
      */
-    private array $unsets = [];
+    private $executableLinesGroupedByBranch = [];
 
     /**
-     * @psalm-var array<int, string>
+     * @var array<int, bool>
      */
-    private array $commentsToCheckForUnset = [];
+    private $unsets = [];
+
+    /**
+     * @var array<int, string>
+     */
+    private $commentsToCheckForUnset = [];
 
     public function __construct(string $source)
     {

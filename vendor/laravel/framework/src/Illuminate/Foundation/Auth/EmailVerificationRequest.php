@@ -4,7 +4,6 @@ namespace Illuminate\Foundation\Auth;
 
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
 
 class EmailVerificationRequest extends FormRequest
 {
@@ -58,7 +57,7 @@ class EmailVerificationRequest extends FormRequest
      * @param  \Illuminate\Validation\Validator  $validator
      * @return void
      */
-    public function withValidator(Validator $validator)
+    public function withValidator($validator)
     {
         return $validator;
     }

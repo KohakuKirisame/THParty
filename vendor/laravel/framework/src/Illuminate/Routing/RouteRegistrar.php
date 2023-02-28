@@ -241,7 +241,7 @@ class RouteRegistrar
         }
 
         if (is_array($action) &&
-            array_is_list($action) &&
+            ! Arr::isAssoc($action) &&
             Reflector::isCallable($action)) {
             if (strncmp($action[0], '\\', 1)) {
                 $action[0] = '\\'.$action[0];

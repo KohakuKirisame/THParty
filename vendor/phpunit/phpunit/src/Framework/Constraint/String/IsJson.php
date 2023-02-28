@@ -29,8 +29,10 @@ final class IsJson extends Constraint
     /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
+     *
+     * @param mixed $other value or object to evaluate
      */
-    protected function matches(mixed $other): bool
+    protected function matches($other): bool
     {
         if ($other === '') {
             return false;
@@ -50,17 +52,20 @@ final class IsJson extends Constraint
      *
      * The beginning of failure messages is "Failed asserting that" in most
      * cases. This method should return the second part of that sentence.
+     *
+     * @param mixed $other evaluated value or object
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    protected function failureDescription(mixed $other): string
+    protected function failureDescription($other): string
     {
         if ($other === '') {
             return 'an empty string is valid JSON';
         }
 
         json_decode($other);
-
         $error = (string) JsonMatchesErrorMessageProvider::determineJsonError(
-            json_last_error()
+            (string) json_last_error()
         );
 
         return sprintf(

@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\Framework\MockObject;
 
+use const DIRECTORY_SEPARATOR;
 use function explode;
 use function implode;
 use function is_object;
@@ -24,6 +25,8 @@ use function trim;
 use function var_export;
 use ReflectionMethod;
 use ReflectionParameter;
+use SebastianBergmann\Template\Exception as TemplateException;
+use SebastianBergmann\Template\Template;
 use SebastianBergmann\Type\ReflectionMapper;
 use SebastianBergmann\Type\Type;
 use SebastianBergmann\Type\UnknownType;
@@ -33,18 +36,65 @@ use SebastianBergmann\Type\UnknownType;
  */
 final class MockMethod
 {
-    use TemplateLoader;
-    private readonly string $className;
-    private readonly string $methodName;
-    private readonly bool $cloneArguments;
-    private readonly string $modifier;
-    private readonly string $argumentsForDeclaration;
-    private readonly string $argumentsForCall;
-    private readonly Type $returnType;
-    private readonly string $reference;
-    private readonly bool $callOriginalMethod;
-    private readonly bool $static;
-    private readonly ?string $deprecation;
+    /**
+     * @var Template[]
+     */
+    private static $templates = [];
+
+    /**
+     * @var string
+     */
+    private $className;
+
+    /**
+     * @var string
+     */
+    private $methodName;
+
+    /**
+     * @var bool
+     */
+    private $cloneArguments;
+
+    /**
+     * @var string string
+     */
+    private $modifier;
+
+    /**
+     * @var string
+     */
+    private $argumentsForDeclaration;
+
+    /**
+     * @var string
+     */
+    private $argumentsForCall;
+
+    /**
+     * @var Type
+     */
+    private $returnType;
+
+    /**
+     * @var string
+     */
+    private $reference;
+
+    /**
+     * @var bool
+     */
+    private $callOriginalMethod;
+
+    /**
+     * @var bool
+     */
+    private $static;
+
+    /**
+     * @var ?string
+     */
+    private $deprecation;
 
     /**
      * @throws ReflectionException
@@ -84,8 +134,8 @@ final class MockMethod
             $method->getName(),
             $cloneArguments,
             $modifier,
-            self::methodParametersForDeclaration($method),
-            self::methodParametersForCall($method),
+            self::getMethodParametersForDeclaration($method),
+            self::getMethodParametersForCall($method),
             (new ReflectionMapper)->fromReturnType($method),
             $reference,
             $callOriginalMethod,
@@ -126,7 +176,7 @@ final class MockMethod
         $this->deprecation             = $deprecation;
     }
 
-    public function methodName(): string
+    public function getName(): string
     {
         return $this->methodName;
     }
@@ -154,7 +204,7 @@ final class MockMethod
 
         if (null !== $this->deprecation) {
             $deprecation         = "The {$this->className}::{$this->methodName} method is deprecated ({$this->deprecation}).";
-            $deprecationTemplate = $this->loadTemplate('deprecation.tpl');
+            $deprecationTemplate = $this->getTemplate('deprecation.tpl');
 
             $deprecationTemplate->setVar(
                 [
@@ -165,7 +215,7 @@ final class MockMethod
             $deprecation = $deprecationTemplate->render();
         }
 
-        $template = $this->loadTemplate($templateFile);
+        $template = $this->getTemplate($templateFile);
 
         $template->setVar(
             [
@@ -186,9 +236,31 @@ final class MockMethod
         return $template->render();
     }
 
-    public function returnType(): Type
+    public function getReturnType(): Type
     {
         return $this->returnType;
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    private function getTemplate(string $template): Template
+    {
+        $filename = __DIR__ . DIRECTORY_SEPARATOR . 'Generator' . DIRECTORY_SEPARATOR . $template;
+
+        if (!isset(self::$templates[$filename])) {
+            try {
+                self::$templates[$filename] = new Template($filename);
+            } catch (TemplateException $e) {
+                throw new RuntimeException(
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e
+                );
+            }
+        }
+
+        return self::$templates[$filename];
     }
 
     /**
@@ -196,7 +268,7 @@ final class MockMethod
      *
      * @throws RuntimeException
      */
-    private static function methodParametersForDeclaration(ReflectionMethod $method): string
+    private static function getMethodParametersForDeclaration(ReflectionMethod $method): string
     {
         $parameters = [];
         $types      = (new ReflectionMapper)->fromParameterTypes($method);
@@ -242,7 +314,7 @@ final class MockMethod
      *
      * @throws ReflectionException
      */
-    private static function methodParametersForCall(ReflectionMethod $method): string
+    private static function getMethodParametersForCall(ReflectionMethod $method): string
     {
         $parameters = [];
 
@@ -279,12 +351,12 @@ final class MockMethod
             $defaultValue = $parameter->getDefaultValue();
 
             if (!is_object($defaultValue)) {
-                return var_export($defaultValue, true);
+                return (string) var_export($defaultValue, true);
             }
 
             $parameterAsString = $parameter->__toString();
 
-            return explode(
+            return (string) explode(
                 ' = ',
                 substr(
                     substr(

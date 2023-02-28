@@ -33,25 +33,16 @@ class CookieSessionHandler implements SessionHandlerInterface
     protected $minutes;
 
     /**
-     * Indicates whether the session should be expired when the browser closes.
-     *
-     * @var bool
-     */
-    protected $expireOnClose;
-
-    /**
      * Create a new cookie driven handler instance.
      *
      * @param  \Illuminate\Contracts\Cookie\QueueingFactory  $cookie
      * @param  int  $minutes
-     * @param  bool  $expireOnClose
      * @return void
      */
-    public function __construct(CookieJar $cookie, $minutes, $expireOnClose = false)
+    public function __construct(CookieJar $cookie, $minutes)
     {
         $this->cookie = $cookie;
         $this->minutes = $minutes;
-        $this->expireOnClose = $expireOnClose;
     }
 
     /**
@@ -101,7 +92,7 @@ class CookieSessionHandler implements SessionHandlerInterface
         $this->cookie->queue($sessionId, json_encode([
             'data' => $data,
             'expires' => $this->availableAt($this->minutes * 60),
-        ]), $this->expireOnClose ? 0 : $this->minutes);
+        ]), $this->minutes);
 
         return true;
     }

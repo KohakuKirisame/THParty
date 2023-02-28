@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace NunoMaduro\Collision\Adapters\Phpunit;
 
 use NunoMaduro\Collision\Contracts\Adapters\Phpunit\HasPrintableTestCaseName;
-use PHPUnit\Event\Code\Test;
-use PHPUnit\Event\Code\TestMethod;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
@@ -14,50 +13,61 @@ use PHPUnit\Event\Code\TestMethod;
 final class State
 {
     /**
+     * The complete test suite number of tests.
+     *
+     * @var int|null
+     */
+    public $suiteTotalTests;
+
+    /**
      * The complete test suite tests.
      *
-     * @var array<string, TestResult>
+     * @var array<int, TestResult>
      */
-    public array $suiteTests = [];
+    public $suiteTests = [];
 
     /**
      * The current test case class.
+     *
+     * @var string
      */
-    public string|null $testCaseName;
+    public $testCaseName;
 
     /**
      * The current test case tests.
      *
-     * @var array<string, TestResult>
+     * @var array<int, TestResult>
      */
-    public array $testCaseTests = [];
+    public $testCaseTests = [];
 
     /**
      * The current test case tests.
      *
-     * @var array<string, TestResult>
+     * @var array<int, TestResult>
      */
-    public array $toBePrintedCaseTests = [];
+    public $toBePrintedCaseTests = [];
 
     /**
      * Header printed.
+     *
+     * @var bool
      */
-    public bool $headerPrinted = false;
+    public $headerPrinted = false;
 
     /**
      * The state constructor.
      */
-    public function __construct()
+    private function __construct(string $testCaseName)
     {
-        $this->testCaseName = '';
+        $this->testCaseName = $testCaseName;
     }
 
     /**
-     * Checks if the given test already contains a result.
+     * Creates a new State starting from the given test case.
      */
-    public function existsInTestCase(Test $test): bool
+    public static function from(TestCase $test): self
     {
-        return isset($this->testCaseTests[$test->id()]);
+        return new self(self::getPrintableTestCaseName($test));
     }
 
     /**
@@ -65,24 +75,10 @@ final class State
      */
     public function add(TestResult $test): void
     {
-        $this->testCaseName = $test->testCaseName;
+        $this->testCaseTests[] = $test;
+        $this->toBePrintedCaseTests[] = $test;
 
-        $this->testCaseTests[$test->id] = $test;
-        $this->toBePrintedCaseTests[$test->id] = $test;
-
-        $this->suiteTests[$test->id] = $test;
-    }
-
-    /**
-     * Sets the duration of the given test, and returns the test result.
-     */
-    public function setDuration(Test $test, float $duration): TestResult
-    {
-        $result = $this->testCaseTests[$test->id()];
-
-        $result->setDuration($duration);
-
-        return $result;
+        $this->suiteTests[] = $test;
     }
 
     /**
@@ -97,38 +93,12 @@ final class State
         }
 
         foreach ($this->testCaseTests as $test) {
-            if ($test->type !== TestResult::PASS && $test->type !== TestResult::TODO) {
+            if ($test->type !== TestResult::PASS) {
                 return 'WARN';
             }
         }
 
-        if ($this->todosCount() > 0 && (count($this->testCaseTests) === $this->todosCount())) {
-            return 'TODO';
-        }
-
         return 'PASS';
-    }
-
-    /**
-     * Gets the number of tests that are todos.
-     */
-    public function todosCount(): int
-    {
-        return count(array_values(array_filter($this->testCaseTests, function (TestResult $test): bool {
-            return $test->type === TestResult::TODO;
-        })));
-    }
-
-    /**
-     * Gets the test case title color.
-     */
-    public function getTestCaseFontColor(): string
-    {
-        if ($this->getTestCaseTitleColor() === 'blue') {
-            return 'white';
-        }
-
-        return $this->getTestCaseTitle() === 'FAIL' ? 'default' : 'black';
     }
 
     /**
@@ -143,14 +113,8 @@ final class State
         }
 
         foreach ($this->testCaseTests as $test) {
-            if ($test->type !== TestResult::PASS && $test->type !== TestResult::TODO) {
+            if ($test->type !== TestResult::PASS) {
                 return 'yellow';
-            }
-        }
-
-        foreach ($this->testCaseTests as $test) {
-            if ($test->type === TestResult::TODO) {
-                return 'blue';
             }
         }
 
@@ -176,17 +140,17 @@ final class State
     /**
      * Checks if the given test case is different from the current one.
      */
-    public function testCaseHasChanged(TestMethod $test): bool
+    public function testCaseHasChanged(TestCase $testCase): bool
     {
-        return self::getPrintableTestCaseName($test) !== $this->testCaseName;
+        return self::getPrintableTestCaseName($testCase) !== $this->testCaseName;
     }
 
     /**
-     * Moves the an new test case.
+     * Moves the a new test case.
      */
-    public function moveTo(TestMethod $test): void
+    public function moveTo(TestCase $testCase): void
     {
-        $this->testCaseName = self::getPrintableTestCaseName($test);
+        $this->testCaseName = self::getPrintableTestCaseName($testCase);
 
         $this->testCaseTests = [];
 
@@ -213,16 +177,26 @@ final class State
     }
 
     /**
-     * Returns the printable test case name from the given `TestCase`.
+     * Checks if the given test already contains a result.
      */
-    public static function getPrintableTestCaseName(TestMethod $test): string
+    public function existsInTestCase(TestCase $test): bool
     {
-        $className = explode('::', $test->id())[0];
-
-        if (is_subclass_of($className, HasPrintableTestCaseName::class)) {
-            return $className::getPrintableTestCaseName();
+        foreach ($this->testCaseTests as $testResult) {
+            if (TestResult::makeDescription($test) === $testResult->description) {
+                return true;
+            }
         }
 
-        return $className;
+        return false;
+    }
+
+    /**
+     * Returns the printable test case name from the given `TestCase`.
+     */
+    public static function getPrintableTestCaseName(TestCase $test): string
+    {
+        return $test instanceof HasPrintableTestCaseName
+            ? $test->getPrintableTestCaseName()
+            : get_class($test);
     }
 }

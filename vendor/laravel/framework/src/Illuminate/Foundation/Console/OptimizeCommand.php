@@ -16,6 +16,17 @@ class OptimizeCommand extends Command
     protected $name = 'optimize';
 
     /**
+     * The name of the console command.
+     *
+     * This name is used to identify the command during lazy loading.
+     *
+     * @var string|null
+     *
+     * @deprecated
+     */
+    protected static $defaultName = 'optimize';
+
+    /**
      * The console command description.
      *
      * @var string

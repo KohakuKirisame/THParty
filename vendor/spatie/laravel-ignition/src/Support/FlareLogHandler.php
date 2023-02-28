@@ -4,9 +4,7 @@ namespace Spatie\LaravelIgnition\Support;
 
 use InvalidArgumentException;
 use Monolog\Handler\AbstractProcessingHandler;
-use Monolog\Level;
 use Monolog\Logger;
-use Monolog\LogRecord;
 use Spatie\FlareClient\Flare;
 use Spatie\FlareClient\Report;
 use Throwable;
@@ -17,13 +15,11 @@ class FlareLogHandler extends AbstractProcessingHandler
 
     protected SentReports $sentReports;
 
-    protected int $minimumReportLogLevel;
+    protected int $minimumReportLogLevel = Logger::ERROR;
 
-    public function __construct(Flare $flare, SentReports $sentReports, $level = Level::Debug, $bubble = true)
+    public function __construct(Flare $flare, SentReports $sentReports, $level = Logger::DEBUG, $bubble = true)
     {
         $this->flare = $flare;
-
-        $this->minimumReportLogLevel = Level::Error->value;
 
         $this->sentReports = $sentReports;
 
@@ -32,19 +28,19 @@ class FlareLogHandler extends AbstractProcessingHandler
 
     public function setMinimumReportLogLevel(int $level): void
     {
-        if (! in_array($level, Level::VALUES)) {
+        if (! in_array($level, Logger::getLevels())) {
             throw new InvalidArgumentException('The given minimum log level is not supported.');
         }
 
         $this->minimumReportLogLevel = $level;
     }
 
-    protected function write(LogRecord $record): void
+    protected function write(array $record): void
     {
-        if (! $this->shouldReport($record->toArray())) {
+        if (! $this->shouldReport($record)) {
             return;
         }
-        if ($this->hasException($record->toArray())) {
+        if ($this->hasException($record)) {
             $report = $this->flare->report($record['context']['exception']);
 
             if ($report) {
@@ -55,10 +51,10 @@ class FlareLogHandler extends AbstractProcessingHandler
         }
 
         if (config('flare.send_logs_as_events')) {
-            if ($this->hasValidLogLevel($record->toArray())) {
+            if ($this->hasValidLogLevel($record)) {
                 $this->flare->reportMessage(
                     $record['message'],
-                    'Log ' . Logger::toMonologLevel($record['level'])->getName(),
+                    'Log ' . Logger::getLevelName($record['level']),
                     function (Report $flareReport) use ($record) {
                         foreach ($record['context'] as $key => $value) {
                             $flareReport->context($key, $value);

@@ -33,20 +33,22 @@ use PHPUnit\Framework\Exception;
  */
 class DefaultPhpProcess extends AbstractPhpProcess
 {
-    private ?string $tempFile = null;
+    /**
+     * @var string
+     */
+    protected $tempFile;
 
     /**
      * Runs a single job (PHP code) using a separate PHP process.
      *
      * @throws Exception
-     * @throws PhpProcessException
      */
     public function runJob(string $job, array $settings = []): array
     {
         if ($this->stdin || $this->useTemporaryFile()) {
             if (!($this->tempFile = tempnam(sys_get_temp_dir(), 'PHPUnit')) ||
                 file_put_contents($this->tempFile, $job) === false) {
-                throw new PhpProcessException(
+                throw new Exception(
                     'Unable to write temporary file'
                 );
             }
@@ -69,7 +71,6 @@ class DefaultPhpProcess extends AbstractPhpProcess
      * Handles creating the child process and returning the STDOUT and STDERR.
      *
      * @throws Exception
-     * @throws PhpProcessException
      */
     protected function runProcess(string $job, array $settings): array
     {
@@ -104,7 +105,7 @@ class DefaultPhpProcess extends AbstractPhpProcess
         );
 
         if (!is_resource($process)) {
-            throw new PhpProcessException(
+            throw new Exception(
                 'Unable to spawn worker process'
             );
         }
@@ -134,7 +135,7 @@ class DefaultPhpProcess extends AbstractPhpProcess
                 if ($n === 0) {
                     proc_terminate($process, 9);
 
-                    throw new PhpProcessException(
+                    throw new Exception(
                         sprintf(
                             'Job execution aborted after %d seconds',
                             $this->timeout

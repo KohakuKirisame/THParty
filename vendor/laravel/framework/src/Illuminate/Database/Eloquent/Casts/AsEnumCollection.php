@@ -15,7 +15,7 @@ class AsEnumCollection implements Castable
      * @template TEnum of \UnitEnum|\BackedEnum
      *
      * @param  array{class-string<TEnum>}  $arguments
-     * @return \Illuminate\Contracts\Database\Eloquent\CastsAttributes<\Illuminate\Support\Collection<array-key, TEnum>, iterable<TEnum>>
+     * @return CastsAttributes<Collection<array-key, TEnum>, iterable<TEnum>>
      */
     public static function castUsing(array $arguments)
     {

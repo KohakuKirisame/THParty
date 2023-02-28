@@ -20,12 +20,15 @@ use RecursiveIterator;
  */
 final class TestSuiteIterator implements RecursiveIterator
 {
-    private int $position = 0;
+    /**
+     * @var int
+     */
+    private $position = 0;
 
     /**
-     * @psalm-var list<Test>
+     * @var Test[]
      */
-    private readonly array $tests;
+    private $tests;
 
     public function __construct(TestSuite $testSuite)
     {

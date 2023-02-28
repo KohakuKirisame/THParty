@@ -12,7 +12,6 @@ use Illuminate\Support\Env;
 use Illuminate\Support\Str;
 use NunoMaduro\Collision\Adapters\Laravel\Exceptions\RequirementsException;
 use NunoMaduro\Collision\Coverage;
-use PHPUnit\Runner\Version;
 use RuntimeException;
 use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Process;
@@ -31,11 +30,9 @@ class TestCommand extends Command
      */
     protected $signature = 'test
         {--without-tty : Disable output to TTY}
-        {--compact : Indicates whether the compact printer should be used}
         {--coverage : Indicates whether code coverage information should be collected}
         {--min= : Indicates the minimum threshold enforcement for code coverage}
         {--p|parallel : Indicates if the tests should run in parallel}
-        {--profile : Lists top 10 slowest tests}
         {--recreate-databases : Indicates if the test databases should be re-created}
         {--drop-databases : Indicates if the test databases should be dropped}
     ';
@@ -66,16 +63,21 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        $phpunitVersion = Version::id();
+        $phpunitVersion = \PHPUnit\Runner\Version::id();
 
-        if ($phpunitVersion[0].$phpunitVersion[1] !== '10') {
-            throw new RequirementsException('Running Collision 7.x artisan test command requires at least PHPUnit 10.x.');
+        if ((int) $phpunitVersion[0] === 1) {
+            throw new RequirementsException('Running PHPUnit 10.x or Pest 2.x requires Collision 7.x.');
         }
 
-        $laravelVersion = \Illuminate\Foundation\Application::VERSION;
+        if ((int) $phpunitVersion[0] < 9) {
+            throw new RequirementsException('Running Collision 6.x artisan test command requires at least PHPUnit 9.x.');
+        }
 
-        if ($laravelVersion[0].$laravelVersion[1] !== '10') { // @phpstan-ignore-line
-            throw new RequirementsException('Running Collision 7.x artisan test command requires at least Laravel 10.x.');
+        $laravelVersion = (int) \Illuminate\Foundation\Application::VERSION;
+
+        // @phpstan-ignore-next-line
+        if ($laravelVersion < 9) {
+            throw new RequirementsException('Running Collision 6.x artisan test command requires at least Laravel 9.x.');
         }
 
         if ($this->option('coverage') && ! Coverage::isAvailable()) {
@@ -83,7 +85,7 @@ class TestCommand extends Command
                 "\n  <fg=white;bg=red;options=bold> ERROR </> Code coverage driver not available.%s</>",
                 Coverage::usingXdebug()
                     ? " Did you set <href=https://xdebug.org/docs/code_coverage#mode>Xdebug's coverage mode</>?"
-                    : ' Did you install <href=https://xdebug.org/>Xdebug</> or <href=https://github.com/krakjoe/pcov>PCOV</>?'
+                    : ''
             ));
 
             $this->newLine();
@@ -91,11 +93,12 @@ class TestCommand extends Command
             return 1;
         }
 
-        /** @var bool $usesParallel */
-        $usesParallel = $this->option('parallel');
+        if ($this->option('parallel') && ! $this->isParallelDependenciesInstalled()) {
+            if (! $this->confirm('Running tests in parallel requires "brianium/paratest". Do you wish to install it as a dev dependency?')) {
+                return 1;
+            }
 
-        if ($usesParallel && ! $this->isParallelDependenciesInstalled()) {
-            throw new RequirementsException('Running Collision 7.x artisan test command in parallel requires at least ParaTest (brianium/paratest) 7.x.');
+            $this->installParallelDependencies();
         }
 
         $options = array_slice($_SERVER['argv'], $this->option('without-tty') ? 3 : 2);
@@ -151,6 +154,8 @@ class TestCommand extends Command
             }
         }
 
+        $this->newLine();
+
         return $exitCode;
     }
 
@@ -188,14 +193,6 @@ class TestCommand extends Command
             $arguments[] = Coverage::getPath();
         }
 
-        if ($this->option('ansi')) {
-            $arguments[] = '--colors=always';
-        }
-
-        if ($this->option('no-ansi')) {
-            $arguments[] = '--colors=never';
-        }
-
         return $arguments;
     }
 
@@ -206,7 +203,7 @@ class TestCommand extends Command
      */
     protected function usingPest()
     {
-        return function_exists('\Pest\\version');
+        return class_exists(\Pest\Laravel\PestServiceProvider::class);
     }
 
     /**
@@ -217,17 +214,13 @@ class TestCommand extends Command
      */
     protected function phpunitArguments($options)
     {
-        $options = array_merge(['--no-output'], $options);
+        $options = array_merge(['--printer=NunoMaduro\\Collision\\Adapters\\Phpunit\\Printer'], $options);
 
         $options = array_values(array_filter($options, function ($option) {
             return ! Str::startsWith($option, '--env=')
                 && $option != '-q'
                 && $option != '--quiet'
                 && $option != '--coverage'
-                && $option != '--compact'
-                && $option != '--profile'
-                && $option != '--ansi'
-                && $option != '--no-ansi'
                 && ! Str::startsWith($option, '--min');
         }));
 
@@ -251,8 +244,6 @@ class TestCommand extends Command
                 && $option != '--coverage'
                 && $option != '-q'
                 && $option != '--quiet'
-                && $option != '--ansi'
-                && $option != '--no-ansi'
                 && ! Str::startsWith($option, '--min')
                 && ! Str::startsWith($option, '-p')
                 && ! Str::startsWith($option, '--parallel')
@@ -277,19 +268,7 @@ class TestCommand extends Command
      */
     protected function phpunitEnvironmentVariables()
     {
-        $variables = [
-            'COLLISION_PRINTER' => 'DefaultPrinter',
-        ];
-
-        if ($this->option('compact')) {
-            $variables['COLLISION_PRINTER_COMPACT'] = 'true';
-        }
-
-        if ($this->option('profile')) {
-            $variables['COLLISION_PRINTER_PROFILE'] = 'true';
-        }
-
-        return $variables;
+        return [];
     }
 
     /**
@@ -315,7 +294,9 @@ class TestCommand extends Command
     {
         if (! $this->option('env')) {
             $vars = self::getEnvironmentVariables(
+                // @phpstan-ignore-next-line
                 $this->laravel->environmentPath(),
+                // @phpstan-ignore-next-line
                 $this->laravel->environmentFile()
             );
 
@@ -360,7 +341,37 @@ class TestCommand extends Command
      */
     protected function isParallelDependenciesInstalled()
     {
-        return class_exists(\ParaTest\ParaTestCommand::class);
+        return class_exists(\ParaTest\Console\Commands\ParaTestCommand::class);
+    }
+
+    /**
+     * Install parallel testing needed dependencies.
+     *
+     * @return void
+     */
+    protected function installParallelDependencies()
+    {
+        $command = $this->findComposer().' require brianium/paratest --dev';
+
+        $process = Process::fromShellCommandline($command, null, null, null, null);
+
+        if ('\\' !== DIRECTORY_SEPARATOR && file_exists('/dev/tty') && is_readable('/dev/tty')) {
+            try {
+                $process->setTty(true);
+            } catch (RuntimeException $e) {
+                $this->output->writeln('Warning: '.$e->getMessage());
+            }
+        }
+
+        try {
+            $process->run(function ($type, $line) {
+                $this->output->write($line);
+            });
+        } catch (ProcessSignaledException $e) {
+            if (extension_loaded('pcntl') && $e->getSignal() !== SIGINT) {
+                throw $e;
+            }
+        }
     }
 
     /**

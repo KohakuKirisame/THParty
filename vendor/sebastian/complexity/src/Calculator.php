@@ -9,8 +9,6 @@
  */
 namespace SebastianBergmann\Complexity;
 
-use function assert;
-use function file_get_contents;
 use PhpParser\Error;
 use PhpParser\Lexer;
 use PhpParser\Node;
@@ -46,7 +44,7 @@ final class Calculator
         } catch (Error $error) {
             throw new RuntimeException(
                 $error->getMessage(),
-                $error->getCode(),
+                (int) $error->getCode(),
                 $error
             );
         }
@@ -74,7 +72,7 @@ final class Calculator
         } catch (Error $error) {
             throw new RuntimeException(
                 $error->getMessage(),
-                $error->getCode(),
+                (int) $error->getCode(),
                 $error
             );
         }

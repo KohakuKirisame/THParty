@@ -33,13 +33,7 @@ class LogTransport implements TransportInterface
      */
     public function send(RawMessage $message, Envelope $envelope = null): ?SentMessage
     {
-        $string = $message->toString();
-
-        if (str_contains($string, 'Content-Transfer-Encoding: quoted-printable')) {
-            $string = quoted_printable_decode($string);
-        }
-
-        $this->logger->debug($string);
+        $this->logger->debug($message->toString());
 
         return new SentMessage($message, $envelope ?? Envelope::create($message));
     }

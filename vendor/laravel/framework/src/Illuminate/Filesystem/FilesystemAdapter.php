@@ -371,17 +371,13 @@ class FilesystemAdapter implements CloudFilesystemContract
     /**
      * Store the uploaded file on the disk.
      *
-     * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string  $path
-     * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string|array|null  $file
+     * @param  string  $path
+     * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string  $file
      * @param  mixed  $options
      * @return string|false
      */
-    public function putFile($path, $file = null, $options = [])
+    public function putFile($path, $file, $options = [])
     {
-        if (is_null($file) || is_array($file)) {
-            [$path, $file, $options] = ['', $path, $file ?? []];
-        }
-
         $file = is_string($file) ? new File($file) : $file;
 
         return $this->putFileAs($path, $file, $file->hashName(), $options);
@@ -390,18 +386,14 @@ class FilesystemAdapter implements CloudFilesystemContract
     /**
      * Store the uploaded file on the disk with a given name.
      *
-     * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string  $path
-     * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string|array|null  $file
-     * @param  string|array|null  $name
+     * @param  string  $path
+     * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string  $file
+     * @param  string  $name
      * @param  mixed  $options
      * @return string|false
      */
-    public function putFileAs($path, $file, $name = null, $options = [])
+    public function putFileAs($path, $file, $name, $options = [])
     {
-        if (is_null($name) || is_array($name)) {
-            [$path, $file, $name, $options] = ['', $path, $file, $name ?? []];
-        }
-
         $stream = fopen(is_string($file) ? $file : $file->getRealPath(), 'r');
 
         // Next, we will format the path of the file and store the file using a stream since

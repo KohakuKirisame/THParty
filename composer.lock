@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e40158b87dc8925f4f18823157acd32a",
+    "content-hash": "51a6a4eba9a9b3127fecb8dbbc4eba2d",
     "packages": [
         {
             "name": "brick/math",
@@ -2276,76 +2276,6 @@
                 }
             ],
             "time": "2023-02-25T19:38:58+00:00"
-        },
-        {
-            "name": "predis/predis",
-            "version": "v2.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/predis/predis.git",
-                "reference": "c5b60884e89630f9518a7919f0566db438f0fc9a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/predis/predis/zipball/c5b60884e89630f9518a7919f0566db438f0fc9a",
-                "reference": "c5b60884e89630f9518a7919f0566db438f0fc9a",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2 || ^8.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^8.0 || ~9.4.4"
-            },
-            "suggest": {
-                "ext-curl": "Allows access to Webdis when paired with phpiredis"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Predis\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Till Krüss",
-                    "homepage": "https://till.im",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Daniele Alessandri",
-                    "email": "suppakilla@gmail.com",
-                    "homepage": "http://clorophilla.net",
-                    "role": "Creator"
-                }
-            ],
-            "description": "A flexible and feature-complete Redis client for PHP.",
-            "homepage": "http://github.com/predis/predis",
-            "keywords": [
-                "nosql",
-                "predis",
-                "redis"
-            ],
-            "support": {
-                "issues": "https://github.com/predis/predis/issues",
-                "source": "https://github.com/predis/predis/tree/v2.1.1"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/sponsors/tillkruss",
-                    "type": "github"
-                }
-            ],
-            "time": "2023-01-17T20:57:35+00:00"
         },
         {
             "name": "psr/container",
@@ -5209,11 +5139,11 @@
         },
         {
             "name": "tencentcloud/tencentcloud-sdk-php",
-            "version": "3.0.832",
+            "version": "3.0.833",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/tencentcloud/tencentcloud-sdk-php/3.0.832/tencentcloud-tencentcloud-sdk-php-3.0.832.zip",
-                "reference": "0a2a75e22ded981fda5d8c5d503a18f29da0b9c5",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/tencentcloud/tencentcloud-sdk-php/3.0.833/tencentcloud-tencentcloud-sdk-php-3.0.833.zip",
+                "reference": "754c9538b51be95b2f3ad6d890530cbf81f7f897",
                 "shasum": ""
             },
             "require": {
@@ -5242,7 +5172,7 @@
             ],
             "description": "TencentCloudApi php sdk",
             "homepage": "https://github.com/TencentCloud/tencentcloud-sdk-php",
-            "time": "2023-02-27T00:04:09+00:00"
+            "time": "2023-02-28T00:03:42+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
@@ -8041,7 +7971,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.1"
+        "php": "^8.0.2"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

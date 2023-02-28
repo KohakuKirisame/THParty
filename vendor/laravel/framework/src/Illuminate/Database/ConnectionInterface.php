@@ -19,7 +19,7 @@ interface ConnectionInterface
      * Get a new raw query expression.
      *
      * @param  mixed  $value
-     * @return \Illuminate\Contracts\Database\Query\Expression
+     * @return \Illuminate\Database\Query\Expression
      */
     public function raw($value);
 

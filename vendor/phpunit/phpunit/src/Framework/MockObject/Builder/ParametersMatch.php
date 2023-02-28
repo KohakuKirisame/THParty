@@ -16,8 +16,13 @@ interface ParametersMatch extends Stub
 {
     /**
      * Defines the expectation which must occur before the current is valid.
+     *
+     * @param string $id the identification of the expectation that should
+     *                   occur before this one
+     *
+     * @return Stub
      */
-    public function after(string $id): Stub;
+    public function after($id);
 
     /**
      * Sets the parameters to match for, each parameter to this function will
@@ -33,8 +38,10 @@ interface ParametersMatch extends Stub
      * // match first parameter with value 'smock' and second identical to 42
      * $b->with('smock', new PHPUnit\Framework\Constraint\IsEqual(42));
      * </code>
+     *
+     * @return ParametersMatch
      */
-    public function with(mixed ...$arguments): self;
+    public function with(...$arguments);
 
     /**
      * Sets a rule which allows any kind of parameters.
@@ -44,6 +51,8 @@ interface ParametersMatch extends Stub
      * // match any number of parameters
      * $b->withAnyParameters();
      * </code>
+     *
+     * @return ParametersMatch
      */
-    public function withAnyParameters(): self;
+    public function withAnyParameters();
 }

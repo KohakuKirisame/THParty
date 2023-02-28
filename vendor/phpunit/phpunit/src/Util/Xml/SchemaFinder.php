@@ -20,7 +20,7 @@ use PHPUnit\Runner\Version;
 final class SchemaFinder
 {
     /**
-     * @throws XmlException
+     * @throws Exception
      */
     public function find(string $version): string
     {
@@ -31,7 +31,7 @@ final class SchemaFinder
         }
 
         if (!is_file($filename)) {
-            throw new XmlException(
+            throw new Exception(
                 sprintf(
                     'Schema for PHPUnit %s is not available',
                     $version

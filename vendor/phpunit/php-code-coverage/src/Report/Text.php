@@ -47,13 +47,36 @@ final class Text
      * @var string
      */
     private const COLOR_RESET = "\x1b[0m";
-    private readonly Thresholds $thresholds;
-    private readonly bool $showUncoveredFiles;
-    private readonly bool $showOnlySummary;
 
-    public function __construct(Thresholds $thresholds, bool $showUncoveredFiles = false, bool $showOnlySummary = false)
+    /**
+     * @var string
+     */
+    private const COLOR_EOL = "\x1b[2K";
+
+    /**
+     * @var int
+     */
+    private $lowUpperBound;
+
+    /**
+     * @var int
+     */
+    private $highLowerBound;
+
+    /**
+     * @var bool
+     */
+    private $showUncoveredFiles;
+
+    /**
+     * @var bool
+     */
+    private $showOnlySummary;
+
+    public function __construct(int $lowUpperBound = 50, int $highLowerBound = 90, bool $showUncoveredFiles = false, bool $showOnlySummary = false)
     {
-        $this->thresholds         = $thresholds;
+        $this->lowUpperBound      = $lowUpperBound;
+        $this->highLowerBound     = $highLowerBound;
         $this->showUncoveredFiles = $showUncoveredFiles;
         $this->showOnlySummary    = $showOnlySummary;
     }
@@ -73,6 +96,7 @@ final class Text
             'branches' => '',
             'paths'    => '',
             'reset'    => '',
+            'eol'      => '',
         ];
 
         if ($showColors) {
@@ -103,6 +127,7 @@ final class Text
 
             $colors['reset']  = self::COLOR_RESET;
             $colors['header'] = self::COLOR_HEADER;
+            $colors['eol']    = self::COLOR_EOL;
         }
 
         $classes = sprintf(
@@ -281,11 +306,11 @@ final class Text
             $totalNumberOfElements
         );
 
-        if ($coverage->asFloat() >= $this->thresholds->highLowerBound()) {
+        if ($coverage->asFloat() >= $this->highLowerBound) {
             return self::COLOR_GREEN;
         }
 
-        if ($coverage->asFloat() > $this->thresholds->lowUpperBound()) {
+        if ($coverage->asFloat() > $this->lowUpperBound) {
             return self::COLOR_YELLOW;
         }
 
@@ -304,7 +329,10 @@ final class Text
         sprintf($format, $totalNumberOfElements) . ')';
     }
 
-    private function format(string $color, int $padding, string|false $string): string
+    /**
+     * @param false|string $string
+     */
+    private function format(string $color, int $padding, $string): string
     {
         $reset = $color ? self::COLOR_RESET : '';
 

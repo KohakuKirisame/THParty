@@ -11,7 +11,7 @@ namespace PHPUnit\Framework\Constraint;
 
 use function is_string;
 use function sprintf;
-use function str_contains;
+use function strpos;
 use function trim;
 use PHPUnit\Framework\ExpectationFailedException;
 use SebastianBergmann\Comparator\ComparisonFailure;
@@ -22,12 +22,27 @@ use SebastianBergmann\Comparator\Factory as ComparatorFactory;
  */
 final class IsEqual extends Constraint
 {
-    private readonly mixed $value;
-    private readonly float $delta;
-    private readonly bool $canonicalize;
-    private readonly bool $ignoreCase;
+    /**
+     * @var mixed
+     */
+    private $value;
 
-    public function __construct(mixed $value, float $delta = 0.0, bool $canonicalize = false, bool $ignoreCase = false)
+    /**
+     * @var float
+     */
+    private $delta;
+
+    /**
+     * @var bool
+     */
+    private $canonicalize;
+
+    /**
+     * @var bool
+     */
+    private $ignoreCase;
+
+    public function __construct($value, float $delta = 0.0, bool $canonicalize = false, bool $ignoreCase = false)
     {
         $this->value        = $value;
         $this->delta        = $delta;
@@ -46,8 +61,10 @@ final class IsEqual extends Constraint
      * failure.
      *
      * @throws ExpectationFailedException
+     *
+     * @return bool
      */
-    public function evaluate(mixed $other, string $description = '', bool $returnResult = false): ?bool
+    public function evaluate($other, string $description = '', bool $returnResult = false): ?bool
     {
         // If $this->value and $other are identical, they are also equal.
         // This is the most common path and will allow us to skip
@@ -87,13 +104,15 @@ final class IsEqual extends Constraint
 
     /**
      * Returns a string representation of the constraint.
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function toString(): string
     {
         $delta = '';
 
         if (is_string($this->value)) {
-            if (str_contains($this->value, "\n")) {
+            if (strpos($this->value, "\n") !== false) {
                 return 'is equal to <text>';
             }
 

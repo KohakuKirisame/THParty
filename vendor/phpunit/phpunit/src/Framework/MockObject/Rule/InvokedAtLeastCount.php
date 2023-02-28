@@ -17,9 +17,15 @@ use PHPUnit\Framework\MockObject\Invocation as BaseInvocation;
  */
 final class InvokedAtLeastCount extends InvocationOrder
 {
-    private readonly int $requiredInvocations;
+    /**
+     * @var int
+     */
+    private $requiredInvocations;
 
-    public function __construct(int $requiredInvocations)
+    /**
+     * @param int $requiredInvocations
+     */
+    public function __construct($requiredInvocations)
     {
         $this->requiredInvocations = $requiredInvocations;
     }
@@ -37,7 +43,7 @@ final class InvokedAtLeastCount extends InvocationOrder
      */
     public function verify(): void
     {
-        $count = $this->numberOfInvocations();
+        $count = $this->getInvocationCount();
 
         if ($count < $this->requiredInvocations) {
             throw new ExpectationFailedException(
@@ -50,5 +56,9 @@ final class InvokedAtLeastCount extends InvocationOrder
     public function matches(BaseInvocation $invocation): bool
     {
         return true;
+    }
+
+    protected function invokedDo(BaseInvocation $invocation): void
+    {
     }
 }

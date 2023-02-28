@@ -18,9 +18,15 @@ use PHPUnit\Framework\MockObject\Invocation as BaseInvocation;
  */
 final class InvokedCount extends InvocationOrder
 {
-    private readonly int $expectedCount;
+    /**
+     * @var int
+     */
+    private $expectedCount;
 
-    public function __construct(int $expectedCount)
+    /**
+     * @param int $expectedCount
+     */
+    public function __construct($expectedCount)
     {
         $this->expectedCount = $expectedCount;
     }
@@ -48,7 +54,7 @@ final class InvokedCount extends InvocationOrder
      */
     public function verify(): void
     {
-        $count = $this->numberOfInvocations();
+        $count = $this->getInvocationCount();
 
         if ($count !== $this->expectedCount) {
             throw new ExpectationFailedException(
@@ -67,19 +73,28 @@ final class InvokedCount extends InvocationOrder
      */
     protected function invokedDo(BaseInvocation $invocation): void
     {
-        $count = $this->numberOfInvocations();
+        $count = $this->getInvocationCount();
 
         if ($count > $this->expectedCount) {
             $message = $invocation->toString() . ' ';
 
-            $message .= match ($this->expectedCount) {
-                0       => 'was not expected to be called.',
-                1       => 'was not expected to be called more than once.',
-                default => sprintf(
-                    'was not expected to be called more than %d times.',
-                    $this->expectedCount
-                ),
-            };
+            switch ($this->expectedCount) {
+                case 0:
+                    $message .= 'was not expected to be called.';
+
+                    break;
+
+                case 1:
+                    $message .= 'was not expected to be called more than once.';
+
+                    break;
+
+                default:
+                    $message .= sprintf(
+                        'was not expected to be called more than %d times.',
+                        $this->expectedCount
+                    );
+            }
 
             throw new ExpectationFailedException($message);
         }

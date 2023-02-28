@@ -18,14 +18,17 @@ use SebastianBergmann\Exporter\Exporter;
  */
 final class ReturnStub implements Stub
 {
-    private readonly mixed $value;
+    /**
+     * @var mixed
+     */
+    private $value;
 
-    public function __construct(mixed $value)
+    public function __construct($value)
     {
         $this->value = $value;
     }
 
-    public function invoke(Invocation $invocation): mixed
+    public function invoke(Invocation $invocation)
     {
         return $this->value;
     }

@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
-use Illuminate\Http\Request;
 
 class Authenticate implements AuthenticatesRequests
 {
@@ -91,7 +90,7 @@ class Authenticate implements AuthenticatesRequests
      * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
-    protected function redirectTo(Request $request)
+    protected function redirectTo($request)
     {
         //
     }

@@ -21,25 +21,30 @@ use Throwable;
 final class InvocationHandler
 {
     /**
-     * @psalm-var list<Matcher>
+     * @var Matcher[]
      */
-    private array $matchers = [];
+    private $matchers = [];
 
     /**
-     * @psalm-var array<string,Matcher>
+     * @var Matcher[]
      */
-    private array $matcherMap = [];
+    private $matcherMap = [];
 
     /**
-     * @psalm-var list<ConfigurableMethod>
+     * @var ConfigurableMethod[]
      */
-    private readonly array $configurableMethods;
-    private readonly bool $returnValueGeneration;
-    private ?ReturnValueNotConfiguredException $deferredError = null;
+    private $configurableMethods;
 
     /**
-     * @psalm-param list<ConfigurableMethod> $configurableMethods
+     * @var bool
      */
+    private $returnValueGeneration;
+
+    /**
+     * @var Throwable
+     */
+    private $deferredError;
+
     public function __construct(array $configurableMethods, bool $returnValueGeneration)
     {
         $this->configurableMethods   = $configurableMethods;
@@ -59,15 +64,24 @@ final class InvocationHandler
 
     /**
      * Looks up the match builder with identification $id and returns it.
+     *
+     * @param string $id The identification of the match builder
      */
     public function lookupMatcher(string $id): ?Matcher
     {
-        return $this->matcherMap[$id] ?? null;
+        if (isset($this->matcherMap[$id])) {
+            return $this->matcherMap[$id];
+        }
+
+        return null;
     }
 
     /**
      * Registers a matcher with the identification $id. The matcher can later be
      * looked up using lookupMatcher() to figure out if it has been invoked.
+     *
+     * @param string  $id      The identification of the matcher
+     * @param Matcher $matcher The builder which is being registered
      *
      * @throws MatcherAlreadyRegisteredException
      */
@@ -93,10 +107,10 @@ final class InvocationHandler
     }
 
     /**
-     * @throws \PHPUnit\Framework\MockObject\Exception
      * @throws Exception
+     * @throws RuntimeException
      */
-    public function invoke(Invocation $invocation): mixed
+    public function invoke(Invocation $invocation)
     {
         $exception      = null;
         $hasReturnValue = false;
@@ -128,7 +142,7 @@ final class InvocationHandler
         if (!$this->returnValueGeneration) {
             $exception = new ReturnValueNotConfiguredException($invocation);
 
-            if (strtolower($invocation->methodName()) === '__tostring') {
+            if (strtolower($invocation->getMethodName()) === '__tostring') {
                 $this->deferredError = $exception;
 
                 return '';

@@ -3,7 +3,6 @@
 namespace Illuminate\Database\Schema\Grammars;
 
 use Illuminate\Database\Connection;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Fluent;
 
@@ -21,7 +20,7 @@ class SqlServerGrammar extends Grammar
      *
      * @var string[]
      */
-    protected $modifiers = ['Collate', 'Nullable', 'Default', 'Persisted', 'Increment'];
+    protected $modifiers = ['Increment', 'Collate', 'Nullable', 'Default', 'Persisted'];
 
     /**
      * The columns available as serials.
@@ -29,13 +28,6 @@ class SqlServerGrammar extends Grammar
      * @var string[]
      */
     protected $serials = ['tinyInteger', 'smallInteger', 'mediumInteger', 'integer', 'bigInteger'];
-
-    /**
-     * The commands to be executed outside of create or alter command.
-     *
-     * @var string[]
-     */
-    protected $fluentCommands = ['Default'];
 
     /**
      * Compile a create database command.
@@ -135,43 +127,6 @@ class SqlServerGrammar extends Grammar
     }
 
     /**
-     * Compile a change column command into a series of SQL statements.
-     *
-     * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $command
-     * @param  \Illuminate\Database\Connection  $connection
-     * @return array|string
-     *
-     * @throws \RuntimeException
-     */
-    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
-    {
-        if (! $connection->usingNativeSchemaOperations()) {
-            return parent::compileChange($blueprint, $command, $connection);
-        }
-
-        $changes = [$this->compileDropDefaultConstraint($blueprint, $command)];
-
-        foreach ($blueprint->getChangedColumns() as $column) {
-            $sql = sprintf('alter table %s alter column %s %s',
-                $this->wrapTable($blueprint),
-                $this->wrap($column),
-                $this->getType($column)
-            );
-
-            foreach ($this->modifiers as $modifier) {
-                if (method_exists($this, $method = "modify{$modifier}")) {
-                    $sql .= $this->{$method}($blueprint, $column);
-                }
-            }
-
-            $changes[] = $sql;
-        }
-
-        return $changes;
-    }
-
-    /**
      * Compile a primary key command.
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
@@ -236,24 +191,6 @@ class SqlServerGrammar extends Grammar
     }
 
     /**
-     * Compile a default command.
-     *
-     * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $command
-     * @return string|null
-     */
-    public function compileDefault(Blueprint $blueprint, Fluent $command)
-    {
-        if ($command->column->change && ! is_null($command->column->default)) {
-            return sprintf('alter table %s add default %s for %s',
-                $this->wrapTable($blueprint),
-                $this->getDefaultValue($command->column->default),
-                $this->wrap($command->column)
-            );
-        }
-    }
-
-    /**
      * Compile a drop table command.
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
@@ -315,9 +252,7 @@ class SqlServerGrammar extends Grammar
      */
     public function compileDropDefaultConstraint(Blueprint $blueprint, Fluent $command)
     {
-        $columns = $command->name === 'change'
-            ? "'".collect($blueprint->getChangedColumns())->pluck('name')->implode("','")."'"
-            : "'".implode("','", $command->columns)."'";
+        $columns = "'".implode("','", $command->columns)."'";
 
         $tableName = $this->getTablePrefix().$blueprint->getTable();
 
@@ -762,11 +697,9 @@ class SqlServerGrammar extends Grammar
      */
     protected function typeTimestamp(Fluent $column)
     {
-        if ($column->useCurrent) {
-            $column->default(new Expression('CURRENT_TIMESTAMP'));
-        }
+        $columnType = $column->precision ? "datetime2($column->precision)" : 'datetime';
 
-        return $column->precision ? "datetime2($column->precision)" : 'datetime';
+        return $column->useCurrent ? "$columnType default CURRENT_TIMESTAMP" : $columnType;
     }
 
     /**
@@ -779,11 +712,9 @@ class SqlServerGrammar extends Grammar
      */
     protected function typeTimestampTz(Fluent $column)
     {
-        if ($column->useCurrent) {
-            $column->default(new Expression('CURRENT_TIMESTAMP'));
-        }
+        $columnType = $column->precision ? "datetimeoffset($column->precision)" : 'datetimeoffset';
 
-        return $column->precision ? "datetimeoffset($column->precision)" : 'datetimeoffset';
+        return $column->useCurrent ? "$columnType default CURRENT_TIMESTAMP" : $columnType;
     }
 
     /**
@@ -977,7 +908,7 @@ class SqlServerGrammar extends Grammar
      */
     protected function modifyDefault(Blueprint $blueprint, Fluent $column)
     {
-        if (! $column->change && ! is_null($column->default)) {
+        if (! is_null($column->default)) {
             return ' default '.$this->getDefaultValue($column->default);
         }
     }
@@ -991,7 +922,7 @@ class SqlServerGrammar extends Grammar
      */
     protected function modifyIncrement(Blueprint $blueprint, Fluent $column)
     {
-        if (! $column->change && in_array($column->type, $this->serials) && $column->autoIncrement) {
+        if (in_array($column->type, $this->serials) && $column->autoIncrement) {
             return ' identity primary key';
         }
     }
@@ -1005,14 +936,6 @@ class SqlServerGrammar extends Grammar
      */
     protected function modifyPersisted(Blueprint $blueprint, Fluent $column)
     {
-        if ($column->change) {
-            if ($column->type === 'computed') {
-                return $column->persisted ? ' add persisted' : ' drop persisted';
-            }
-
-            return null;
-        }
-
         if ($column->persisted) {
             return ' persisted';
         }
@@ -1021,7 +944,7 @@ class SqlServerGrammar extends Grammar
     /**
      * Wrap a table in keyword identifiers.
      *
-     * @param  \Illuminate\Database\Schema\Blueprint|\Illuminate\Contracts\Database\Query\Expression|string  $table
+     * @param  \Illuminate\Database\Query\Expression|string  $table
      * @return string
      */
     public function wrapTable($table)

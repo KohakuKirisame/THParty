@@ -29,4 +29,8 @@ final class AnyInvokedCount extends InvocationOrder
     {
         return true;
     }
+
+    protected function invokedDo(BaseInvocation $invocation): void
+    {
+    }
 }

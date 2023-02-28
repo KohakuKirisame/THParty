@@ -15,12 +15,35 @@ use ReflectionClass;
 
 final class ExcludeList
 {
-    private array $globalVariables   = [];
-    private array $classes           = [];
-    private array $classNamePrefixes = [];
-    private array $parentClasses     = [];
-    private array $interfaces        = [];
-    private array $staticProperties  = [];
+    /**
+     * @var array
+     */
+    private $globalVariables = [];
+
+    /**
+     * @var string[]
+     */
+    private $classes = [];
+
+    /**
+     * @var string[]
+     */
+    private $classNamePrefixes = [];
+
+    /**
+     * @var string[]
+     */
+    private $parentClasses = [];
+
+    /**
+     * @var string[]
+     */
+    private $interfaces = [];
+
+    /**
+     * @var array
+     */
+    private $staticAttributes = [];
 
     public function addGlobalVariable(string $variableName): void
     {
@@ -47,13 +70,13 @@ final class ExcludeList
         $this->classNamePrefixes[] = $classNamePrefix;
     }
 
-    public function addStaticProperty(string $className, string $propertyName): void
+    public function addStaticAttribute(string $className, string $attributeName): void
     {
-        if (!isset($this->staticProperties[$className])) {
-            $this->staticProperties[$className] = [];
+        if (!isset($this->staticAttributes[$className])) {
+            $this->staticAttributes[$className] = [];
         }
 
-        $this->staticProperties[$className][$propertyName] = true;
+        $this->staticAttributes[$className][$attributeName] = true;
     }
 
     public function isGlobalVariableExcluded(string $variableName): bool
@@ -61,10 +84,7 @@ final class ExcludeList
         return isset($this->globalVariables[$variableName]);
     }
 
-    /**
-     * @psalm-param class-string $className
-     */
-    public function isStaticPropertyExcluded(string $className, string $propertyName): bool
+    public function isStaticAttributeExcluded(string $className, string $attributeName): bool
     {
         if (in_array($className, $this->classes, true)) {
             return true;
@@ -90,6 +110,10 @@ final class ExcludeList
             }
         }
 
-        return isset($this->staticProperties[$className][$propertyName]);
+        if (isset($this->staticAttributes[$className][$attributeName])) {
+            return true;
+        }
+
+        return false;
     }
 }

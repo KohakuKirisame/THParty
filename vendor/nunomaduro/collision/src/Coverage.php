@@ -33,14 +33,8 @@ final class Coverage
      */
     public static function isAvailable(): bool
     {
-        $runtime = new Runtime();
-
-        if (! $runtime->canCollectCodeCoverage()) {
+        if (! (new Runtime())->canCollectCodeCoverage()) {
             return false;
-        }
-
-        if ($runtime->hasPCOV() || $runtime->hasPHPDBGCodeCoverage()) {
-            return true;
         }
 
         if (static::usingXdebug()) {
@@ -76,7 +70,7 @@ final class Coverage
             }
 
             $output->writeln(
-                '  <fg=black;bg=yellow;options=bold> WARN </> No coverage driver detected.</> Did you install <href=https://xdebug.org/>Xdebug</> or <href=https://github.com/krakjoe/pcov>PCOV</>?',
+                '  <fg=black;bg=yellow;options=bold> WARN </> No coverage driver detected.</>',
             );
 
             return 0.0;

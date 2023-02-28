@@ -439,8 +439,7 @@ class ComponentAttributeBag implements ArrayAccess, Htmlable, IteratorAggregate
             }
 
             if ($value === true) {
-                // Exception for Alpine...
-                $value = $key === 'x-data' ? '' : $key;
+                $value = $key;
             }
 
             $string .= ' '.$key.'="'.str_replace('"', '\\"', trim($value)).'"';

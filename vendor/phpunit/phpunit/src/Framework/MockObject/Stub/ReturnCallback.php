@@ -10,6 +10,7 @@
 namespace PHPUnit\Framework\MockObject\Stub;
 
 use function call_user_func_array;
+use function get_class;
 use function is_array;
 use function is_object;
 use function sprintf;
@@ -20,26 +21,23 @@ use PHPUnit\Framework\MockObject\Invocation;
  */
 final class ReturnCallback implements Stub
 {
-    /**
-     * @var callable
-     */
     private $callback;
 
-    public function __construct(callable $callback)
+    public function __construct($callback)
     {
         $this->callback = $callback;
     }
 
-    public function invoke(Invocation $invocation): mixed
+    public function invoke(Invocation $invocation)
     {
-        return call_user_func_array($this->callback, $invocation->parameters());
+        return call_user_func_array($this->callback, $invocation->getParameters());
     }
 
     public function toString(): string
     {
         if (is_array($this->callback)) {
             if (is_object($this->callback[0])) {
-                $class = $this->callback[0]::class;
+                $class = get_class($this->callback[0]);
                 $type  = '->';
             } else {
                 $class = $this->callback[0];
