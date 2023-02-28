@@ -101,6 +101,16 @@ class UserController extends BaseController{
 				'password.required' => '密码不能为空',
 				'password.min' => '密码最小长度为8',
 			]);
+			//验证验证码
+			if(time()>$request->session()->get('time')+300){
+				$request->session()->forget('captcha');
+				$request->session()->forget('phone');
+				$request->session()->forget('time');
+				return back()->withErrors([
+					//错误信息
+					'captcha' => '验证码已过期',
+				])->withInput();
+			}
 			if (strval($credentials['captcha']) != $request->session()->get('code') || $credentials['phone'] != $request->session()->get('phone')) {
 				return back()->withErrors([
 					//错误信息
@@ -195,6 +205,7 @@ class UserController extends BaseController{
 
 			$request->session()->put("phone",$phone);
 			$request->session()->put("code",$code);
+			$request->session()->put("time",time());
 			print_r($resp->toJsonString());
 
 		}catch (TencentCloudSDKException $e) {
