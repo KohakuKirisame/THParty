@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Developer;
 use App\Models\User;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Qcloud\Cos\Client;
 use TencentCloud\Sms\V20210111\SmsClient;
 use TencentCloud\Sms\V20210111\Models\SendSmsRequest;
 use TencentCloud\Common\Exception\TencentCloudSDKException;
 use TencentCloud\Common\Credential;
-use TencentCloud\Common\Profile\ClientProfile;
-use TencentCloud\Common\Profile\HttpProfile;
 
 class UserController extends BaseController{
 	/*
@@ -224,5 +224,41 @@ class UserController extends BaseController{
 		}else{
 			return view("login");
 		}
+	}
+
+	static public function getAvatar(int $uid=0){
+		/**
+		 * 获取用户头像，未指定用户则返回自己，如果用户没有头像则返回默认头像
+		 * @param $uid
+		 * 用户id
+		 * @return string
+		 * 返回头像地址
+		 */
+		if($uid==0){
+			if (Auth::check()) {
+				$uid=Auth::id();
+			}else{
+				return env("TC_COS_CDNURL")."/avatar/default.png";
+			}
+		}
+		$cosClient= new Client([
+			'region' => env("TC_COS_REGION"),
+			'schema' => 'https',
+			'credentials' => [
+				'secretId' => env("TC_SECRET_ID"),
+				'secretKey' => env("TC_SECRET_KEY"),
+			],
+		]);
+		$result = $cosClient->doesObjectExist(env("TC_COS_BUCKET"), "/avatar/".$uid.".png");
+		if($result){
+			return env("TC_COS_CDNURL")."/avatar/".$uid.".png";
+		}else{
+			if (Developer::where(["uid"=>$uid])->exists()){
+				$git=Developer::where(["uid"=>$uid])->first()->github;
+				return "https://avatars.githubusercontent.com/".$git;
+			}
+			return env("TC_COS_CDNURL")."/avatar/default.png";
+		}
+
 	}
 }

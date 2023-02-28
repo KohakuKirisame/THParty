@@ -36,32 +36,21 @@
 					<a href="https://github.com/KohakuCao/THParty"><img class="rounded" src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" /></a>
 				</div>
 				<div class="row">
-					<div class="col-6 col-md-3 col-xl-2 px-2">
-						<div class="card rounded p-0 ani" id="dev1" onmouseenter="addShadow('#dev1')" onmouseleave="noShadow('#dev1')">
-							<img src="https://avatars.githubusercontent.com/u/26038081" class="card-img-top rounded-circle p-3" />
-							<div class="card-body">
-								<h5 class="card-title text-center">Kohaku</h5>
-								<h6 class="card-subtitle text-center text-muted">架构师</h6>
+					@foreach($developers as $developer)
+						<div class="col-6 col-md-3 col-xl-2 px-2">
+							<div class="card rounded p-0 ani" id="dev{{$developer['id']}}" onmouseenter="addShadow('#dev{{$developer["id"]}}')" onmouseleave="noShadow('#dev{{$developer["id"]}}')">
+								<img src="{{$developer['avatar']}}" class="card-img-top rounded-circle p-3" />
+								<div class="card-body">
+									<h5 class="card-title text-center">{{$developer['name']}}</h5>
+									<h6 class="card-subtitle text-center text-muted">{{$developer['job']}}</h6>
+								</div>
+								<ul class="list-group list-group-flush">
+									<a class="list-group-item list-group-item-action" href="https://github.com/{{$developer['github']}}">GitHub</a>
+									<a class="list-group-item list-group-item-action">QQ {{$developer['qq']}}</a>
+								</ul>
 							</div>
-							<ul class="list-group list-group-flush">
-								<a class="list-group-item list-group-item-action" href="https://github.com/KohakuCao">GitHub</a>
-								<a class="list-group-item list-group-item-action">QQ 2991251742</a>
-							</ul>
 						</div>
-					</div>
-					<div class="col-6 col-md-3 col-xl-2 px-2">
-						<div class="card rounded p-0 ani" id="dev2" onmouseenter="addShadow('#dev2')" onmouseleave="noShadow('#dev2')">
-							<img src="https://avatars.githubusercontent.com/u/100140070" class="card-img-top rounded-circle p-3" />
-							<div class="card-body">
-								<h5 class="card-title text-center">唐汉瑜</h5>
-								<h6 class="card-subtitle text-center text-muted">后端开发</h6>
-							</div>
-							<ul class="list-group list-group-flush">
-								<a class="list-group-item list-group-item-action" href="https://github.com/HCPTangHY">GitHub</a>
-								<a class="list-group-item list-group-item-action">QQ 1847680031</a>
-							</ul>
-						</div>
-					</div>
+					@endforeach
 				</div>
 			</div>
 		</div>

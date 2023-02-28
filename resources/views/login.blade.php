@@ -25,6 +25,7 @@
 					</div>
 				</form>
 				<div class="row justify-content-around px-2 mt-4">
+					<a href="/Register" class="btn btn-outline-primary col-3">注册</a>
 					<button onclick="$('#loginForm').submit();" class="btn btn-outline-primary col-6">登录</button>
 				</div>
 
