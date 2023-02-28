@@ -91,6 +91,7 @@ You need to comply with the following code specifications:
 - Android开发 Android Developer
 - iOS开发 iOS Developer
 - 小程序开发 Mini Program Developer
+- 宣传推广 Publicity and Promotion
 - 法律顾问 Legal Advisor
 - 客户服务 Customer Service
 
