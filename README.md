@@ -19,7 +19,10 @@ This project started from TouHou fan party of BUAA. Then we set a greater goal f
 
 ## 已实现 Released
 
-- none
+- 用户系统（部分） User System (Partially)
+  - 用户注册 Register
+  - 用户登录 Login
+- 关于页面 About Page
 
 ## 待实现 Developing
 
