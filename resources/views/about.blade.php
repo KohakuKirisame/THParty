@@ -37,7 +37,7 @@
 				</div>
 				<div class="row">
 					@foreach($developers as $developer)
-						<div class="col-6 col-md-3 col-xl-2 px-2">
+						<div class="col-6 col-md-3 col-xl-2 px-2 mb-2">
 							<div class="card rounded p-0 ani" id="dev{{$developer['id']}}" onmouseenter="addShadow('#dev{{$developer["id"]}}')" onmouseleave="noShadow('#dev{{$developer["id"]}}')">
 								<img src="{{$developer['avatar']}}" class="card-img-top rounded-circle p-3" />
 								<div class="card-body">
