@@ -1,0 +1,33 @@
+@font-face {
+	font-family:'Facon';
+	src: url('/font/Facon-2.ttf') format('truetype');
+}
+
+.first-cover{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: url(/storage/img/104050170_p0.jpg) no-repeat center/cover fixed;
+	z-index:1;
+}
+.top-title{
+	font-family: 'Facon';
+	transition: all 1.2s ease-in-out;
+	font-size: 3rem;
+}
+.bgFilter{
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	margin: 0 !important;
+	z-index: 2;
+}
+
+.title-glow{
+	text-shadow: 0 0 10px #ffffff;
+}

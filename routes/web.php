@@ -30,7 +30,7 @@ Route::domain('{act}.thparty.fun')->group(function () {
 
 //本站路由
 	Route::get('/', function () {
-        return view('beian');
+        return view('home');
     });
     Route::get('/About', [HomeController::class, 'aboutPage']);
 	Route::get('/Register', function () {
