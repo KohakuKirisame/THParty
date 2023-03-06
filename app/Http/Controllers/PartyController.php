@@ -146,5 +146,21 @@ class PartyController extends BaseController {
 		return redirect("/Login");
 		//验证通过，修改活动
 	}
+
+	public function partyHomepage(Request $request,string $domain){
+		/**
+		 * 活动主页
+		 * @param Request $request
+		 * @param string $domain
+		 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+		 */
+		$party = Party::where('domain',$domain)->first();
+		if($party == null){
+			return view('errors.404');
+		}
+		return view('party.home',[
+			'party' => $party,
+		]);
+	}
 }
 

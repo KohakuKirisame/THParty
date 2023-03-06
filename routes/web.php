@@ -19,13 +19,17 @@ use App\Http\Controllers\HomeController;
 
 //子域名路由
 
-Route::domain('{act}.thparty.fun')->group(function () {
-    Route::get('/', function ($act) {
-        if($act == 'www'){
-            return redirect("https://thparty.fun");
-        }
-        return redirect("https://".$act.'.edu.cn');
-    });
+Route::domain('www.thparty.fun')->group(function (){
+	Route::any('/', function () {
+		return redirect('https://thparty.fun');
+	});
+	Route::any('/{any}', function () {
+		return redirect('https://thparty.fun'.$_SERVER['REQUEST_URI']);
+	});
+});
+
+Route::domain('{domain}.thparty.fun')->group(function () {
+    Route::get('/', [PartyController::class, 'partyHomepage']);
 });
 
 //本站路由
