@@ -46,6 +46,9 @@ class UserController extends BaseController{
 			if(Auth::attempt($credentials,filter_var($request->input("remember"), FILTER_VALIDATE_BOOLEAN))){
 				//登录成功，重定向
 				$request->session()->regenerate();
+				$user=User::where(['phone'=>$credentials['phone']])->first();
+				$user->last_ip=$request->ip();
+				$user->save();
 				return redirect("/");
 			}
 			//登录失败，返回上一页
@@ -122,6 +125,7 @@ class UserController extends BaseController{
 			$user->username=$credentials['username'];
 			$user->phone=intval($credentials['phone']);
 			$user->password=Hash::make($credentials['password']);
+			$user->reg_ip=$request->ip();
 			if($user->save()){
 				//注册成功，重定向
 				$request->session()->forget('captcha');
