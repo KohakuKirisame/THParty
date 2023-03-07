@@ -2,6 +2,7 @@ var sent=0;
 $("#button-addon2").on("click", function () {
 	var phone = $("#phone").val();
 	var _token = $("input[name='_token']").val();
+	$("#button-addon2").attr("disabled", "disabled");
 	$.post("/Actions/SendSMSCaptcha", {
 		_token: _token,
 		phone: phone,
