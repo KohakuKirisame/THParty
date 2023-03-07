@@ -106,7 +106,7 @@ class UserController extends BaseController{
 			]);
 			//验证验证码
 			if(time()>$request->session()->get('time')+300){
-				$request->session()->forget('captcha');
+				$request->session()->forget('code');
 				$request->session()->forget('phone');
 				$request->session()->forget('time');
 				return back()->withErrors([
@@ -128,7 +128,7 @@ class UserController extends BaseController{
 			$user->reg_ip=$request->ip();
 			if($user->save()){
 				//注册成功，重定向
-				$request->session()->forget('captcha');
+				$request->session()->forget('code');
 				$request->session()->forget('phone');
 				$request->session()->regenerate();
 				return redirect("/");
@@ -146,42 +146,6 @@ class UserController extends BaseController{
 				],
 			])->withInput();
 		}
-	}
-	public function changeUserInfo(Request $request) {
-		/**
-		 * 更改用户名
-		 * @param Request $request
-		 * 包含修改后的 用户名、邮箱、QQ号、个人简介、个人签名
-		 * @return \Illuminate\Routing\Redirector
-		 * 返回重定向
-		 */
-		if (Auth::check()) {
-			$uid = Auth::id();
-			$credentials = $request->validate([
-				'username' => ['required', 'max:255'],
-				'email' => ['required', 'email', 'max:255'],
-				'qq' => ['numeric','integer','min:100000','max:9999999999999'],
-				'introduction' => [],
-				'sign' => ['max:255']
-			],[
-				'username.required' => '你是？',
-				'username.max' => '名称过长',
-				'email.required' => '幻想乡也有邮箱啦',
-				'email.max' => '就没有短一点的邮箱吗',
-				'qq.numeric' => '你这QQ丁真吗',
-				'qq.max' => '你这QQ丁真吗',
-				'sign' => '短些撒'
-			]);
-			$u = User::where(["id"=>$uid])->first();
-			$u->username = $credentials['username'];
-			$u->email = $credentials['email'];
-			$u->qq = $credentials['qq'];
-			$u->introduction = $credentials['introduction'];
-			$u->sign = $credentials['sign'];
-			$u->save();
-			return back()->with('message','修改成功喵！');
-		}
-		return back()->with('message','操作被摩多罗神必吞掉了，，，');
 	}
 
 	public function sendCaptcha(Request $request){
@@ -214,6 +178,134 @@ class UserController extends BaseController{
 
 		}catch (TencentCloudSDKException $e) {
 			echo($e);
+		}
+	}
+	public function changeUserInfo(Request $request) {
+		/**
+		 * 更改用户名
+		 * @param Request $request
+		 * 包含修改后的 用户名、邮箱、QQ号、个人简介、个人签名
+		 * @return \Illuminate\Routing\Redirector
+		 * 返回重定向
+		 */
+		if (Auth::check()) {
+			$uid = Auth::id();
+			$credentials = $request->validate([
+				'username' => ['required', 'max:255'],
+				'email' => ['required', 'email', 'max:255'],
+				'qq' => ['numeric','integer','min:100000','max:9999999999999'],
+				'introduction' => [],
+				'sign' => ['max:255']
+			],[
+				'username.required' => '你是？',
+				'username.max' => '你是兔子？',
+				'email.required' => '幻想乡也有邮箱啦',
+				'email.max' => '就没有短一点的邮箱吗',
+				'qq.numeric' => '你这QQ丁真吗',
+				'qq.max' => '你这QQ丁真吗',
+				'sign.max' => '短些撒'
+			]);
+			$u = User::where(["id"=>$uid])->first();
+			$u->username = $credentials['username'];
+			$u->email = $credentials['email'];
+			$u->qq = $credentials['qq'];
+			$u->introduction = $credentials['introduction'];
+			$u->sign = $credentials['sign'];
+			$u->save();
+			return back()->with('message','修改成功喵！');
+		}
+		return back()->with('message','操作被摩多罗神必吞掉了，，，');
+	}
+	public function changePassword(Request $request) {
+		/**
+		 * 修改密码，登录状态下输入旧密码+验证码修改新密码；非登录状态下通过session中的手机号查找修改新密码
+		 * @param Request $request
+		 * 在登录状态下：含新密码、旧密码、验证码；再非登录状态下，含验证码、新密码
+		 * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+		 * 返回重定向
+		 */
+		if(Auth::check()) {
+			$uid = Auth::id();
+			//验证数据
+			$credentials = $request->validate([
+				'captcha' => ['required'],
+				'oldPassword' => ['required','min:8'],
+				'newPassword' => ['required','min:8']
+			],[
+				"captcha.required" => "验证码不能为空",
+				"oldPassword.required" => "旧密码不能为空！",
+				"oldPassword.min" => "旧密码这么短吗？",
+				"newPassword.required" => "你到底要改成啥啊",
+				"newPassword.min" => "新密码不少于8位"
+			]);
+			//验证验证码
+			if(time()>$request->session()->get('time')+300){
+				$request->session()->forget('code');
+				$request->session()->forget('phone');
+				$request->session()->forget('time');
+				return back()->withErrors([
+					//错误信息
+					'captcha' => '验证码已过期',
+				])->withInput();
+			}
+			if (strval($credentials['captcha']) != $request->session()->get('code') || $credentials['phone'] != $request->session()->get('phone')) {
+				return back()->withErrors([
+					//错误信息
+					'captcha' => '验证码错误',
+				])->withInput();
+			}
+			//验证旧密码
+			$user = User::where(["id"=>$uid])->first();
+			if (!Hash::check($credentials['oldPassword'],$user->password)) {
+				return back()->withErrors([
+					//错误信息
+					'oldPassword' => '旧密码错误，这下⑨了',
+				])->withInput();
+			}
+			//验证通过，修改密码
+			$user->password=Hash::make($credentials['newPassword']);
+			if($user->save()){
+				//注册成功，重定向
+				$request->session()->forget('code');
+				$request->session()->forget('phone');
+				$request->session()->regenerate();
+				return redirect("/");
+			}
+		} else {
+			$credentials = $request->validate([
+				'captcha' => ['required'],
+				'newPassword' => ['required','min:8']
+			],[
+				"captcha.required" => "验证码不能为空",
+				"newPassword.required" => "新密码不能为空",
+				"newPassword.min" => "新密码不少于8位"
+			]);
+			//验证验证码
+			if(time()>$request->session()->get('time')+300){
+				$request->session()->forget('code');
+				$request->session()->forget('phone');
+				$request->session()->forget('time');
+				return back()->withErrors([
+					//错误信息
+					'captcha' => '验证码已过期',
+				])->withInput();
+			}
+			if (strval($credentials['captcha']) != $request->session()->get('code') || $credentials['phone'] != $request->session()->get('phone')) {
+				return back()->withErrors([
+					//错误信息
+					'captcha' => '验证码错误',
+				])->withInput();
+			}
+			//验证通过，修改密码
+			$user = User::where(["phone"=>$request->session()->get('phone')])->first();
+			$user->password=Hash::make($credentials['newPassword']);
+			if($user->save()){
+				//注册成功，重定向
+				$request->session()->forget('code');
+				$request->session()->forget('phone');
+				$request->session()->regenerate();
+				return redirect("/");
+			}
 		}
 	}
 
