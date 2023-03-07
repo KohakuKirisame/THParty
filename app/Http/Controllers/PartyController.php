@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use \Illuminate\Routing\Controller as BaseController;
+use Illuminate\Routing\Controller as BaseController;
 
 
 use App\Models\Party;
@@ -124,27 +124,31 @@ class PartyController extends BaseController {
 				'domain.max' => '阿求的岁月史书无法记录过长的域名',
 				'domain.alpha_dash' => '阿求的岁月史书所记录的域名只能包含字母、数字、破折号（-）以及下划线（_）',
 			]);
-			//验证通过，更改活动
-			//根据pid找到活动信息表，并用新信息填充覆盖
+			//信息合理性验证通过，开始鉴权，先根据pid找到活动信息表
 			$party = Party::find(1)->first();
-			$party->title = $credentials['title'];
-			$party->subtitle = $credentials['subtitle'];
-			$party->type = $credentials['type'];
-			$party->start = $credentials['start'];
-			$party->end = $credentials['end'];
-			$party->location = $credentials['location'];
-			$party->domain = $credentials['domain'];
-			if($party->type == 0){
-				$party->actived = 1; //如果是个人活动，直接激活
-			}else{
-				$party->actived = 0; //如果是高校例会和商业THP，不激活
+			if($party->leader == $uid){
+				//鉴权通过，用新信息填充覆盖
+				$party->title = $credentials['title'];
+				$party->subtitle = $credentials['subtitle'];
+				$party->type = $credentials['type'];
+				$party->start = $credentials['start'];
+				$party->end = $credentials['end'];
+				$party->location = $credentials['location'];
+				$party->domain = $credentials['domain'];
+				if($party->type == 0){
+					$party->actived = 1; //如果是个人活动，直接激活
+				}else{
+					$party->actived = 0; //如果是高校例会和商业THP，不激活
+				}
+				$party->save();
+				return redirect("https://".$credentials['domain'].".thparty.fun/Admin/");
 			}
-			$party->leader = $uid;
-			$party->save();
-			return redirect("https://".$credentials['domain'].".thparty.fun/Admin/");
+			//鉴权失败，不是主人也想改THPinfo？
+			else return back()->with('message','您没有权限修改本Party的信息');
 		}
+		//没登录的回去登录
 		return redirect("/Login");
-		//验证通过，修改活动
+
 	}
 
 	public function partyHomepage(Request $request,string $domain){

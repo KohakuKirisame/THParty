@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 
 use App\Models\Staff;
+use App\Models\Party;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,25 +25,36 @@ class StaffController extends BaseController {
 		if(Auth::check()) { //验证登录
 			$uid = Auth::id(); //获取用户ID
 			$credentials = $request->validate([
-				/**
-				 * 验证规则:
-				 *
-				 */
-				/**
-				 * 'uid' => ['required', 'max:255'],
-				 * 'pid => ['max:255'],
-				 * 'role' => ['required', 'numeric', 'min:0', 'max:2'],
-				 * 'previlege' => ['required','date'],
-				 * ],[
-				 * 暂时不会写验证*/
+				//验证规则：uid和pid必须填写，role只能为0或1（0为管理员，1为普通员工），previlege为特定的权限，由role=0授予，格式为1,2,3,4,5,6,7,...,N
+				'uid' => ['required'],
+				'pid' => ['required'],
+				'role' => ['required', 'numeric', 'min:0', 'max:1'],
+				 ],
+			[//错误信息
+				'uid.required' => 'uid不能为空！',
+				'pid.required' => 'pid不能为空！',
+				'role.required' => 'role不能为空！',
+				'role.min' => 'role只能为0或1（0为管理员，1为普通员工）',
+				'role.max' => 'role只能为0或1（0为管理员，1为普通员工）',
 			]);
-			$staff = new Staff();
-			$staff->uid = $credentials['uid'];
-			$staff->pid = $credentials['pid'];
-			$staff->role = $credentials['role'];
-			$staff->privilege = $credentials['privilege'];
-			$staff->save();
-			return redirect();
+			//信息合理性验证通过，开始鉴权，先根据pid找到活动信息表
+			$party = Party::find(1)->first();
+			if($party->leader == $uid){
+				//鉴权通过，创建staff
+				$staff = new Staff();
+				$staff->uid = $credentials['uid'];
+				$staff->pid = $credentials['pid'];
+				$staff->role = $credentials['role'];
+				$staff->privilege = $credentials['privilege'];
+				$staff->save();
+				return redirect();
+				//暂时不知道重定向到哪
+				//"https://".$credentials['domain'].".thparty.fun/Admin/");
+			}
+			//鉴权失败，不是leader也想授权staff？
+			else return back()->with('message','您没有权限添加staff');
 		}
-	}
+        //没登录的回去登录
+		return redirect("/Login");
+		}
 }

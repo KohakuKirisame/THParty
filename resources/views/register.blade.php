@@ -19,7 +19,7 @@
 					</div>
 					<div class="input-group mb-3">
 						<input type="text" class="form-control" name="captcha" id="captcha" placeholder="手机验证码">
-						<button class="btn btn-outline-success" type="button" id="button-addon2">发送验证码</button>
+						<button class="btn btn-outline-success" type="button" id="button-addon2" disabled="disabled">发送验证码</button>
 					</div>
 					<div class="mb-3">
 						<input type="text" class="form-control" name="username" id="username" placeholder="昵称">
