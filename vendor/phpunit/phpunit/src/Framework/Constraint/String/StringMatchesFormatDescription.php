@@ -15,7 +15,6 @@ use function implode;
 use function preg_match;
 use function preg_quote;
 use function preg_replace;
-use function sprintf;
 use function strtr;
 use SebastianBergmann\Diff\Differ;
 use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
@@ -23,55 +22,50 @@ use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
-final class StringMatchesFormatDescription extends Constraint
+final class StringMatchesFormatDescription extends RegularExpression
 {
-    private string $formatDescription;
-    private readonly string $regularExpression;
-
-    public function __construct(string $formatDescription)
-    {
-        $this->regularExpression = $this->createRegularExpressionFromFormatDescription(
-            $this->convertNewlines($formatDescription)
-        );
-
-        $this->formatDescription = $formatDescription;
-    }
-
     /**
-     * @todo Use format description instead of regular expression
+     * @var string
      */
-    public function toString(): string
+    private $string;
+
+    public function __construct(string $string)
     {
-        return sprintf(
-            'matches PCRE pattern "%s"',
-            $this->regularExpression
+        parent::__construct(
+            $this->createPatternFromFormat(
+                $this->convertNewlines($string)
+            )
         );
+
+        $this->string = $string;
     }
 
     /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
+     *
+     * @param mixed $other value or object to evaluate
      */
-    protected function matches(mixed $other): bool
+    protected function matches($other): bool
     {
-        $other = $this->convertNewlines($other);
-
-        return preg_match($this->regularExpression, $other) > 0;
+        return parent::matches(
+            $this->convertNewlines($other)
+        );
     }
 
-    protected function failureDescription(mixed $other): string
+    protected function failureDescription($other): string
     {
         return 'string matches format description';
     }
 
-    protected function additionalFailureDescription(mixed $other): string
+    protected function additionalFailureDescription($other): string
     {
-        $from = explode("\n", $this->formatDescription);
+        $from = explode("\n", $this->string);
         $to   = explode("\n", $this->convertNewlines($other));
 
         foreach ($from as $index => $line) {
             if (isset($to[$index]) && $line !== $to[$index]) {
-                $line = $this->createRegularExpressionFromFormatDescription($line);
+                $line = $this->createPatternFromFormat($line);
 
                 if (preg_match($line, $to[$index]) > 0) {
                     $from[$index] = $to[$index];
@@ -79,13 +73,13 @@ final class StringMatchesFormatDescription extends Constraint
             }
         }
 
-        $this->formatDescription = implode("\n", $from);
-        $other                   = implode("\n", $to);
+        $this->string = implode("\n", $from);
+        $other        = implode("\n", $to);
 
-        return (new Differ(new UnifiedDiffOutputBuilder("--- Expected\n+++ Actual\n")))->diff($this->formatDescription, $other);
+        return (new Differ(new UnifiedDiffOutputBuilder("--- Expected\n+++ Actual\n")))->diff($this->string, $other);
     }
 
-    private function createRegularExpressionFromFormatDescription(string $string): string
+    private function createPatternFromFormat(string $string): string
     {
         $string = strtr(
             preg_quote($string, '/'),

@@ -12,9 +12,7 @@ namespace PHPUnit\Framework;
 use function array_keys;
 use function get_object_vars;
 use PHPUnit\Util\Filter;
-use PHPUnit\Util\ThrowableToStringMapper;
 use RuntimeException;
-use Stringable;
 use Throwable;
 
 /**
@@ -39,11 +37,14 @@ use Throwable;
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-class Exception extends RuntimeException implements \PHPUnit\Exception, Stringable
+class Exception extends RuntimeException implements \PHPUnit\Exception
 {
-    protected array $serializableTrace;
+    /**
+     * @var array
+     */
+    protected $serializableTrace;
 
-    public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
+    public function __construct($message = '', $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
@@ -54,12 +55,9 @@ class Exception extends RuntimeException implements \PHPUnit\Exception, Stringab
         }
     }
 
-    /**
-     * @throws Exception
-     */
     public function __toString(): string
     {
-        $string = ThrowableToStringMapper::map($this);
+        $string = TestFailure::exceptionToString($this);
 
         if ($trace = Filter::getFilteredStacktrace($this)) {
             $string .= "\n" . $trace;

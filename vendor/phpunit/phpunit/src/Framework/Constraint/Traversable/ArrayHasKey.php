@@ -18,15 +18,23 @@ use ArrayAccess;
  */
 final class ArrayHasKey extends Constraint
 {
-    private readonly int|string $key;
+    /**
+     * @var int|string
+     */
+    private $key;
 
-    public function __construct(int|string $key)
+    /**
+     * @param int|string $key
+     */
+    public function __construct($key)
     {
         $this->key = $key;
     }
 
     /**
      * Returns a string representation of the constraint.
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function toString(): string
     {
@@ -36,8 +44,10 @@ final class ArrayHasKey extends Constraint
     /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
+     *
+     * @param mixed $other value or object to evaluate
      */
-    protected function matches(mixed $other): bool
+    protected function matches($other): bool
     {
         if (is_array($other)) {
             return array_key_exists($this->key, $other);
@@ -55,8 +65,12 @@ final class ArrayHasKey extends Constraint
      *
      * The beginning of failure messages is "Failed asserting that" in most
      * cases. This method should return the second part of that sentence.
+     *
+     * @param mixed $other evaluated value or object
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    protected function failureDescription(mixed $other): string
+    protected function failureDescription($other): string
     {
         return 'an array ' . $this->toString();
     }

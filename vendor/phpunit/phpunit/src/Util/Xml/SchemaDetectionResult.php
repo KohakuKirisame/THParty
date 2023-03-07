@@ -22,10 +22,10 @@ abstract class SchemaDetectionResult
     }
 
     /**
-     * @throws XmlException
+     * @throws Exception
      */
     public function version(): string
     {
-        throw new XmlException('No supported schema was detected');
+        throw new Exception('No supported schema was detected');
     }
 }

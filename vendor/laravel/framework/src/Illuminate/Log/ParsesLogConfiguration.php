@@ -3,7 +3,7 @@
 namespace Illuminate\Log;
 
 use InvalidArgumentException;
-use Monolog\Level;
+use Monolog\Logger as Monolog;
 
 trait ParsesLogConfiguration
 {
@@ -13,14 +13,14 @@ trait ParsesLogConfiguration
      * @var array
      */
     protected $levels = [
-        'debug' => Level::Debug,
-        'info' => Level::Info,
-        'notice' => Level::Notice,
-        'warning' => Level::Warning,
-        'error' => Level::Error,
-        'critical' => Level::Critical,
-        'alert' => Level::Alert,
-        'emergency' => Level::Emergency,
+        'debug' => Monolog::DEBUG,
+        'info' => Monolog::INFO,
+        'notice' => Monolog::NOTICE,
+        'warning' => Monolog::WARNING,
+        'error' => Monolog::ERROR,
+        'critical' => Monolog::CRITICAL,
+        'alert' => Monolog::ALERT,
+        'emergency' => Monolog::EMERGENCY,
     ];
 
     /**

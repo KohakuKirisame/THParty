@@ -10,8 +10,7 @@
 namespace PHPUnit\Framework;
 
 use function explode;
-use PHPUnit\Framework\TestSize\TestSize;
-use PHPUnit\Metadata\Api\Groups;
+use PHPUnit\Util\Test as TestUtil;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
@@ -19,19 +18,18 @@ use PHPUnit\Metadata\Api\Groups;
 final class DataProviderTestSuite extends TestSuite
 {
     /**
-     * @psalm-var list<ExecutionOrderDependency>
+     * @var list<ExecutionOrderDependency>
      */
-    private array $dependencies   = [];
-    private ?array $providedTests = null;
+    private $dependencies = [];
 
     /**
-     * @psalm-param list<ExecutionOrderDependency> $dependencies
+     * @param list<ExecutionOrderDependency> $dependencies
      */
     public function setDependencies(array $dependencies): void
     {
         $this->dependencies = $dependencies;
 
-        foreach ($this->tests() as $test) {
+        foreach ($this->tests as $test) {
             if (!$test instanceof TestCase) {
                 // @codeCoverageIgnoreStart
                 continue;
@@ -42,7 +40,7 @@ final class DataProviderTestSuite extends TestSuite
     }
 
     /**
-     * @psalm-return list<ExecutionOrderDependency>
+     * @return list<ExecutionOrderDependency>
      */
     public function provides(): array
     {
@@ -54,7 +52,7 @@ final class DataProviderTestSuite extends TestSuite
     }
 
     /**
-     * @psalm-return list<ExecutionOrderDependency>
+     * @return list<ExecutionOrderDependency>
      */
     public function requires(): array
     {
@@ -65,11 +63,13 @@ final class DataProviderTestSuite extends TestSuite
 
     /**
      * Returns the size of the each test created using the data provider(s).
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function size(): TestSize
+    public function getSize(): int
     {
         [$className, $methodName] = explode('::', $this->getName());
 
-        return (new Groups)->size($className, $methodName);
+        return TestUtil::getSize($className, $methodName);
     }
 }

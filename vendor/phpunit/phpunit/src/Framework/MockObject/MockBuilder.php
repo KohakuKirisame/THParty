@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\Framework\MockObject;
 
+use function array_diff;
 use function array_merge;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -20,26 +21,87 @@ use ReflectionClass;
  */
 final class MockBuilder
 {
-    private readonly TestCase $testCase;
-    private readonly string $type;
-    private ?array $methods                = [];
-    private bool $emptyMethodsArray        = false;
-    private string $mockClassName          = '';
-    private array $constructorArgs         = [];
-    private bool $originalConstructor      = true;
-    private bool $originalClone            = true;
-    private bool $autoload                 = true;
-    private bool $cloneArguments           = false;
-    private bool $callOriginalMethods      = false;
-    private ?object $proxyTarget           = null;
-    private bool $allowMockingUnknownTypes = true;
-    private bool $returnValueGeneration    = true;
-    private readonly Generator $generator;
+    /**
+     * @var TestCase
+     */
+    private $testCase;
 
     /**
-     * @psalm-param class-string $type
+     * @var string
      */
-    public function __construct(TestCase $testCase, string $type)
+    private $type;
+
+    /**
+     * @var null|string[]
+     */
+    private $methods = [];
+
+    /**
+     * @var bool
+     */
+    private $emptyMethodsArray = false;
+
+    /**
+     * @var string
+     */
+    private $mockClassName = '';
+
+    /**
+     * @var array
+     */
+    private $constructorArgs = [];
+
+    /**
+     * @var bool
+     */
+    private $originalConstructor = true;
+
+    /**
+     * @var bool
+     */
+    private $originalClone = true;
+
+    /**
+     * @var bool
+     */
+    private $autoload = true;
+
+    /**
+     * @var bool
+     */
+    private $cloneArguments = false;
+
+    /**
+     * @var bool
+     */
+    private $callOriginalMethods = false;
+
+    /**
+     * @var ?object
+     */
+    private $proxyTarget;
+
+    /**
+     * @var bool
+     */
+    private $allowMockingUnknownTypes = true;
+
+    /**
+     * @var bool
+     */
+    private $returnValueGeneration = true;
+
+    /**
+     * @var Generator
+     */
+    private $generator;
+
+    /**
+     * @param string|string[] $type
+     *
+     * @psalm-param class-string<MockedType>|string|string[] $type
+     */
+    public function __construct(TestCase $testCase, $type)
     {
         $this->testCase  = $testCase;
         $this->type      = $type;
@@ -51,7 +113,6 @@ final class MockBuilder
      *
      * @throws \PHPUnit\Framework\InvalidArgumentException
      * @throws ClassAlreadyExistsException
-     * @throws ClassIsEnumerationException
      * @throws ClassIsFinalException
      * @throws ClassIsReadonlyException
      * @throws DuplicateMethodException
@@ -63,7 +124,7 @@ final class MockBuilder
      *
      * @psalm-return MockObject&MockedType
      */
-    public function getMock(bool $register = true): MockObject
+    public function getMock(): MockObject
     {
         $object = $this->generator->getMock(
             $this->type,
@@ -80,9 +141,7 @@ final class MockBuilder
             $this->returnValueGeneration
         );
 
-        if ($register) {
-            $this->testCase->registerMockObject($object);
-        }
+        $this->testCase->registerMockObject($object);
 
         return $object;
     }
@@ -142,9 +201,27 @@ final class MockBuilder
     }
 
     /**
+     * Specifies the subset of methods to mock. Default is to mock none of them.
+     *
+     * @deprecated https://github.com/sebastianbergmann/phpunit/pull/3687
+     *
+     * @return $this
+     */
+    public function setMethods(?array $methods = null): self
+    {
+        if ($methods === null) {
+            $this->methods = $methods;
+        } else {
+            $this->methods = array_merge($this->methods ?? [], $methods);
+        }
+
+        return $this;
+    }
+
+    /**
      * Specifies the subset of methods to mock, requiring each to exist in the class.
      *
-     * @psalm-param list<string> $methods
+     * @param string[] $methods
      *
      * @throws CannotUseOnlyMethodsException
      * @throws ReflectionException
@@ -185,7 +262,7 @@ final class MockBuilder
     /**
      * Specifies methods that don't exist in the class which you want to mock.
      *
-     * @psalm-param list<string> $methods
+     * @param string[] $methods
      *
      * @throws CannotUseAddMethodsException
      * @throws ReflectionException
@@ -225,13 +302,30 @@ final class MockBuilder
     }
 
     /**
+     * Specifies the subset of methods to not mock. Default is to mock all of them.
+     *
+     * @deprecated https://github.com/sebastianbergmann/phpunit/pull/3687
+     *
+     * @throws ReflectionException
+     */
+    public function setMethodsExcept(array $methods = []): self
+    {
+        return $this->setMethods(
+            array_diff(
+                $this->generator->getClassMethods($this->type),
+                $methods
+            )
+        );
+    }
+
+    /**
      * Specifies the arguments for the constructor.
      *
      * @return $this
      */
-    public function setConstructorArgs(array $arguments): self
+    public function setConstructorArgs(array $args): self
     {
-        $this->constructorArgs = $arguments;
+        $this->constructorArgs = $args;
 
         return $this;
     }

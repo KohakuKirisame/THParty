@@ -50,9 +50,7 @@ class SessionManager extends Manager
     protected function createCookieDriver()
     {
         return $this->buildSession(new CookieSessionHandler(
-            $this->container->make('cookie'),
-            $this->config->get('session.lifetime'),
-            $this->config->get('session.expire_on_close')
+            $this->container->make('cookie'), $this->config->get('session.lifetime')
         ));
     }
 

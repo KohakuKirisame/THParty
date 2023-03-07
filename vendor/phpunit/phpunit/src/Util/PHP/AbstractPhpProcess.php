@@ -18,23 +18,22 @@ use function escapeshellarg;
 use function ini_get_all;
 use function restore_error_handler;
 use function set_error_handler;
+use function sprintf;
 use function str_replace;
-use function str_starts_with;
+use function strpos;
+use function strrpos;
 use function substr;
 use function trim;
 use function unserialize;
+use __PHP_Incomplete_Class;
 use ErrorException;
-use PHPUnit\Event\Code\TestMethod;
-use PHPUnit\Event\Code\Throwable;
-use PHPUnit\Event\Facade;
-use PHPUnit\Event\NoPreviousThrowableException;
-use PHPUnit\Event\TestData\MoreThanOneDataSetFromDataProviderException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Exception;
+use PHPUnit\Framework\SyntheticError;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Runner\CodeCoverage;
-use PHPUnit\TestRunner\TestResult\PassedTests;
+use PHPUnit\Framework\TestFailure;
+use PHPUnit\Framework\TestResult;
 use SebastianBergmann\Environment\Runtime;
 
 /**
@@ -42,16 +41,35 @@ use SebastianBergmann\Environment\Runtime;
  */
 abstract class AbstractPhpProcess
 {
-    protected Runtime $runtime;
-    protected bool $stderrRedirection = false;
-    protected string $stdin           = '';
-    protected string $arguments       = '';
+    /**
+     * @var Runtime
+     */
+    protected $runtime;
 
     /**
-     * @psalm-var array<string, string>
+     * @var bool
      */
-    protected array $env   = [];
-    protected int $timeout = 0;
+    protected $stderrRedirection = false;
+
+    /**
+     * @var string
+     */
+    protected $stdin = '';
+
+    /**
+     * @var string
+     */
+    protected $args = '';
+
+    /**
+     * @var array<string, string>
+     */
+    protected $env = [];
+
+    /**
+     * @var int
+     */
+    protected $timeout = 0;
 
     public static function factory(): self
     {
@@ -104,9 +122,9 @@ abstract class AbstractPhpProcess
     /**
      * Sets the string of arguments to pass to the php job.
      */
-    public function setArgs(string $arguments): void
+    public function setArgs(string $args): void
     {
-        $this->arguments = $arguments;
+        $this->args = $args;
     }
 
     /**
@@ -114,13 +132,13 @@ abstract class AbstractPhpProcess
      */
     public function getArgs(): string
     {
-        return $this->arguments;
+        return $this->args;
     }
 
     /**
      * Sets the array of environment variables to start the child process with.
      *
-     * @psalm-param array<string, string> $env
+     * @param array<string, string> $env
      */
     public function setEnv(array $env): void
     {
@@ -154,17 +172,17 @@ abstract class AbstractPhpProcess
     /**
      * Runs a single test in a separate PHP process.
      *
-     * @throws \PHPUnit\Runner\Exception
-     * @throws Exception
-     * @throws MoreThanOneDataSetFromDataProviderException
-     * @throws NoPreviousThrowableException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function runTestJob(string $job, Test $test): void
+    public function runTestJob(string $job, Test $test, TestResult $result): void
     {
+        $result->startTest($test);
+
         $_result = $this->runJob($job);
 
         $this->processChildResult(
             $test,
+            $result,
             $_result['stdout'],
             $_result['stderr']
         );
@@ -207,11 +225,11 @@ abstract class AbstractPhpProcess
             $command .= ' ' . escapeshellarg($file);
         }
 
-        if ($this->arguments) {
+        if ($this->args) {
             if (!$file) {
                 $command .= ' --';
             }
-            $command .= ' ' . $this->arguments;
+            $command .= ' ' . $this->args;
         }
 
         if ($this->stderrRedirection) {
@@ -238,95 +256,161 @@ abstract class AbstractPhpProcess
     }
 
     /**
-     * @throws \PHPUnit\Runner\Exception
-     * @throws Exception
-     * @throws MoreThanOneDataSetFromDataProviderException
-     * @throws NoPreviousThrowableException
+     * Processes the TestResult object from an isolated process.
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    private function processChildResult(Test $test, string $stdout, string $stderr): void
+    private function processChildResult(Test $test, TestResult $result, string $stdout, string $stderr): void
     {
+        $time = 0;
+
         if (!empty($stderr)) {
-            $exception = new Exception(trim($stderr));
-
-            assert($test instanceof TestCase);
-
-            Facade::emitter()->testErrored(
-                TestMethod::fromTestCase($test),
-                Throwable::from($exception)
+            $result->addError(
+                $test,
+                new Exception(trim($stderr)),
+                $time
+            );
+        } else {
+            set_error_handler(
+                /**
+                 * @throws ErrorException
+                 */
+                static function ($errno, $errstr, $errfile, $errline): void
+                {
+                    throw new ErrorException($errstr, $errno, $errno, $errfile, $errline);
+                }
             );
 
-            return;
-        }
+            try {
+                if (strpos($stdout, "#!/usr/bin/env php\n") === 0) {
+                    $stdout = substr($stdout, 19);
+                }
 
-        set_error_handler(
-            /**
-             * @throws ErrorException
-             */
-            static function (int $errno, string $errstr, string $errfile, int $errline): never
-            {
-                throw new ErrorException($errstr, $errno, $errno, $errfile, $errline);
-            }
-        );
+                $childResult = unserialize(str_replace("#!/usr/bin/env php\n", '', $stdout));
+                restore_error_handler();
 
-        try {
-            if (str_starts_with($stdout, "#!/usr/bin/env php\n")) {
-                $stdout = substr($stdout, 19);
-            }
+                if ($childResult === false) {
+                    $result->addFailure(
+                        $test,
+                        new AssertionFailedError('Test was run in child process and ended unexpectedly'),
+                        $time
+                    );
+                }
+            } catch (ErrorException $e) {
+                restore_error_handler();
+                $childResult = false;
 
-            $childResult = unserialize(str_replace("#!/usr/bin/env php\n", '', $stdout));
-            restore_error_handler();
-
-            if ($childResult === false) {
-                $exception = new AssertionFailedError('Test was run in child process and ended unexpectedly');
-
-                assert($test instanceof TestCase);
-
-                Facade::emitter()->testErrored(
-                    TestMethod::fromTestCase($test),
-                    Throwable::from($exception)
-                );
-
-                Facade::emitter()->testFinished(
-                    TestMethod::fromTestCase($test),
-                    0
+                $result->addError(
+                    $test,
+                    new Exception(trim($stdout), 0, $e),
+                    $time
                 );
             }
-        } catch (ErrorException $e) {
-            restore_error_handler();
-            $childResult = false;
 
-            $exception = new Exception(trim($stdout), 0, $e);
+            if ($childResult !== false) {
+                if (!empty($childResult['output'])) {
+                    $output = $childResult['output'];
+                }
 
-            assert($test instanceof TestCase);
+                /* @var TestCase $test */
 
-            Facade::emitter()->testErrored(
-                TestMethod::fromTestCase($test),
-                Throwable::from($exception)
-            );
+                $test->setResult($childResult['testResult']);
+                $test->addToAssertionCount($childResult['numAssertions']);
+
+                $childResult = $childResult['result'];
+                assert($childResult instanceof TestResult);
+
+                if ($result->getCollectCodeCoverageInformation()) {
+                    $result->getCodeCoverage()->merge(
+                        $childResult->getCodeCoverage()
+                    );
+                }
+
+                $time           = $childResult->time();
+                $notImplemented = $childResult->notImplemented();
+                $risky          = $childResult->risky();
+                $skipped        = $childResult->skipped();
+                $errors         = $childResult->errors();
+                $warnings       = $childResult->warnings();
+                $failures       = $childResult->failures();
+
+                if (!empty($notImplemented)) {
+                    $result->addError(
+                        $test,
+                        $this->getException($notImplemented[0]),
+                        $time
+                    );
+                } elseif (!empty($risky)) {
+                    $result->addError(
+                        $test,
+                        $this->getException($risky[0]),
+                        $time
+                    );
+                } elseif (!empty($skipped)) {
+                    $result->addError(
+                        $test,
+                        $this->getException($skipped[0]),
+                        $time
+                    );
+                } elseif (!empty($errors)) {
+                    $result->addError(
+                        $test,
+                        $this->getException($errors[0]),
+                        $time
+                    );
+                } elseif (!empty($warnings)) {
+                    $result->addWarning(
+                        $test,
+                        $this->getException($warnings[0]),
+                        $time
+                    );
+                } elseif (!empty($failures)) {
+                    $result->addFailure(
+                        $test,
+                        $this->getException($failures[0]),
+                        $time
+                    );
+                }
+            }
         }
 
-        if ($childResult !== false) {
-            if (!empty($childResult['output'])) {
-                $output = $childResult['output'];
-            }
-
-            Facade::forward($childResult['events']);
-            PassedTests::instance()->import($childResult['passedTests']);
-
-            assert($test instanceof TestCase);
-
-            $test->setResult($childResult['testResult']);
-            $test->addToAssertionCount($childResult['numAssertions']);
-
-            if (CodeCoverage::instance()->isActive() && $childResult['codeCoverage'] instanceof \SebastianBergmann\CodeCoverage\CodeCoverage) {
-                CodeCoverage::instance()->codeCoverage()->merge(
-                    $childResult['codeCoverage']
-                );
-            }
-        }
+        $result->endTest($test, $time);
 
         if (!empty($output)) {
             print $output;
         }
+    }
+
+    /**
+     * Gets the thrown exception from a PHPUnit\Framework\TestFailure.
+     *
+     * @see https://github.com/sebastianbergmann/phpunit/issues/74
+     */
+    private function getException(TestFailure $error): Exception
+    {
+        $exception = $error->thrownException();
+
+        if ($exception instanceof __PHP_Incomplete_Class) {
+            $exceptionArray = [];
+
+            foreach ((array) $exception as $key => $value) {
+                $key                  = substr($key, strrpos($key, "\0") + 1);
+                $exceptionArray[$key] = $value;
+            }
+
+            $exception = new SyntheticError(
+                sprintf(
+                    '%s: %s',
+                    $exceptionArray['_PHP_Incomplete_Class_Name'],
+                    $exceptionArray['message']
+                ),
+                $exceptionArray['code'],
+                $exceptionArray['file'],
+                $exceptionArray['line'],
+                $exceptionArray['trace']
+            );
+        }
+
+        return $exception;
     }
 }

@@ -18,7 +18,10 @@ use ReflectionException;
  */
 final class IsInstanceOf extends Constraint
 {
-    private readonly string $className;
+    /**
+     * @var string
+     */
+    private $className;
 
     public function __construct(string $className)
     {
@@ -40,8 +43,10 @@ final class IsInstanceOf extends Constraint
     /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
+     *
+     * @param mixed $other value or object to evaluate
      */
-    protected function matches(mixed $other): bool
+    protected function matches($other): bool
     {
         return $other instanceof $this->className;
     }
@@ -51,8 +56,12 @@ final class IsInstanceOf extends Constraint
      *
      * The beginning of failure messages is "Failed asserting that" in most
      * cases. This method should return the second part of that sentence.
+     *
+     * @param mixed $other evaluated value or object
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    protected function failureDescription(mixed $other): string
+    protected function failureDescription($other): string
     {
         return sprintf(
             '%s is an instance of %s "%s"',
@@ -70,7 +79,7 @@ final class IsInstanceOf extends Constraint
             if ($reflection->isInterface()) {
                 return 'interface';
             }
-        } catch (ReflectionException) {
+        } catch (ReflectionException $e) {
         }
 
         return 'class';

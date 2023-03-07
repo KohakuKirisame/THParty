@@ -16,6 +16,9 @@ use function serialize;
 use function sprintf;
 use function var_export;
 
+/**
+ * Exports parts of a Snapshot as PHP code.
+ */
 final class CodeExporter
 {
     public function constants(Snapshot $snapshot): string
@@ -75,7 +78,7 @@ EOT;
         return $result;
     }
 
-    private function exportVariable(mixed $variable): string
+    private function exportVariable($variable): string
     {
         if (is_scalar($variable) || null === $variable ||
             (is_array($variable) && $this->arrayOnlyContainsScalars($variable))) {

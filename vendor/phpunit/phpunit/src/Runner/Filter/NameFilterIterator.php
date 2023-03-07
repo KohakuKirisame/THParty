@@ -15,10 +15,10 @@ use function preg_match;
 use function sprintf;
 use function str_replace;
 use Exception;
-use PHPUnit\Framework\SelfDescribing;
-use PHPUnit\Framework\Test;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\ErrorTestCase;
 use PHPUnit\Framework\TestSuite;
+use PHPUnit\Framework\WarningTestCase;
+use PHPUnit\Util\RegularExpression;
 use RecursiveFilterIterator;
 use RecursiveIterator;
 
@@ -27,9 +27,20 @@ use RecursiveIterator;
  */
 final class NameFilterIterator extends RecursiveFilterIterator
 {
-    private ?string $filter = null;
-    private ?int $filterMin = null;
-    private ?int $filterMax = null;
+    /**
+     * @var string
+     */
+    private $filter;
+
+    /**
+     * @var int
+     */
+    private $filterMin;
+
+    /**
+     * @var int
+     */
+    private $filterMax;
 
     /**
      * @throws Exception
@@ -41,6 +52,9 @@ final class NameFilterIterator extends RecursiveFilterIterator
         $this->setFilter($filter);
     }
 
+    /**
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     */
     public function accept(): bool
     {
         $test = $this->getInnerIterator()->current();
@@ -49,9 +63,11 @@ final class NameFilterIterator extends RecursiveFilterIterator
             return true;
         }
 
-        $tmp = $this->describe($test);
+        $tmp = \PHPUnit\Util\Test::describe($test);
 
-        if ($tmp[0] !== '') {
+        if ($test instanceof ErrorTestCase || $test instanceof WarningTestCase) {
+            $name = $test->getMessage();
+        } elseif ($tmp[0] !== '') {
             $name = implode('::', $tmp);
         } else {
             $name = $tmp[1];
@@ -72,7 +88,7 @@ final class NameFilterIterator extends RecursiveFilterIterator
      */
     private function setFilter(string $filter): void
     {
-        if (@preg_match($filter, '') === false) {
+        if (RegularExpression::safeMatch($filter, '') === false) {
             // Handles:
             //  * testAssertEqualsSucceeds#4
             //  * testAssertEqualsSucceeds#4-8
@@ -116,21 +132,5 @@ final class NameFilterIterator extends RecursiveFilterIterator
         }
 
         $this->filter = $filter;
-    }
-
-    /**
-     * @psalm-return array{0: string, 1: string}
-     */
-    private function describe(Test $test): array
-    {
-        if ($test instanceof TestCase) {
-            return [$test::class, $test->nameWithDataSet()];
-        }
-
-        if ($test instanceof SelfDescribing) {
-            return ['', $test->toString()];
-        }
-
-        return ['', $test::class];
     }
 }

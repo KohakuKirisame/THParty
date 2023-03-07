@@ -9,11 +9,10 @@
  */
 namespace PHPUnit\Framework\MockObject\Builder;
 
-use function array_flip;
-use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function count;
+use function in_array;
 use function is_string;
 use function strtolower;
 use PHPUnit\Framework\Constraint\Constraint;
@@ -43,18 +42,20 @@ use Throwable;
  */
 final class InvocationMocker implements InvocationStubber, MethodNameMatch
 {
-    private readonly InvocationHandler $invocationHandler;
-    private readonly Matcher $matcher;
+    /**
+     * @var InvocationHandler
+     */
+    private $invocationHandler;
 
     /**
-     * @psalm-var list<ConfigurableMethod>
+     * @var Matcher
      */
-    private readonly array $configurableMethods;
+    private $matcher;
 
     /**
-     * @psalm-var ?array<string, int>
+     * @var ConfigurableMethod[]
      */
-    private ?array $configurableMethodNames = null;
+    private $configurableMethods;
 
     public function __construct(InvocationHandler $handler, Matcher $matcher, ConfigurableMethod ...$configurableMethods)
     {
@@ -68,7 +69,7 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
      *
      * @return $this
      */
-    public function id(string $id): self
+    public function id($id): self
     {
         $this->invocationHandler->registerMatcher($id, $this->matcher);
 
@@ -86,9 +87,12 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
     }
 
     /**
+     * @param mixed   $value
+     * @param mixed[] $nextValues
+     *
      * @throws IncompatibleReturnValueException
      */
-    public function willReturn(mixed $value, mixed ...$nextValues): self
+    public function willReturn($value, ...$nextValues): self
     {
         if (count($nextValues) === 0) {
             $this->ensureTypeOfReturnValues([$value]);
@@ -105,7 +109,7 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
         return $this->will($stub);
     }
 
-    public function willReturnReference(mixed &$reference): self
+    public function willReturnReference(&$reference): self
     {
         $stub = new ReturnReference($reference);
 
@@ -119,14 +123,14 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
         return $this->will($stub);
     }
 
-    public function willReturnArgument(int $argumentIndex): self
+    public function willReturnArgument($argumentIndex): self
     {
         $stub = new ReturnArgument($argumentIndex);
 
         return $this->will($stub);
     }
 
-    public function willReturnCallback(callable $callback): self
+    public function willReturnCallback($callback): self
     {
         $stub = new ReturnCallback($callback);
 
@@ -140,7 +144,7 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
         return $this->will($stub);
     }
 
-    public function willReturnOnConsecutiveCalls(mixed ...$values): self
+    public function willReturnOnConsecutiveCalls(...$values): self
     {
         $stub = new ConsecutiveCalls($values);
 
@@ -157,7 +161,7 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
     /**
      * @return $this
      */
-    public function after(string $id): self
+    public function after($id): self
     {
         $this->matcher->setAfterMatchBuilderId($id);
 
@@ -165,17 +169,39 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
     }
 
     /**
+     * @param mixed[] $arguments
+     *
      * @throws \PHPUnit\Framework\Exception
      * @throws MethodNameNotConfiguredException
      * @throws MethodParametersAlreadyConfiguredException
      *
      * @return $this
      */
-    public function with(mixed ...$arguments): self
+    public function with(...$arguments): self
     {
         $this->ensureParametersCanBeConfigured();
 
         $this->matcher->setParametersRule(new Rule\Parameters($arguments));
+
+        return $this;
+    }
+
+    /**
+     * @param array ...$arguments
+     *
+     * @throws \PHPUnit\Framework\Exception
+     * @throws MethodNameNotConfiguredException
+     * @throws MethodParametersAlreadyConfiguredException
+     *
+     * @return $this
+     *
+     * @deprecated
+     */
+    public function withConsecutive(...$arguments): self
+    {
+        $this->ensureParametersCanBeConfigured();
+
+        $this->matcher->setParametersRule(new Rule\ConsecutiveParameters($arguments));
 
         return $this;
     }
@@ -196,27 +222,30 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
     }
 
     /**
+     * @param Constraint|string $constraint
+     *
      * @throws \PHPUnit\Framework\InvalidArgumentException
      * @throws MethodCannotBeConfiguredException
      * @throws MethodNameAlreadyConfiguredException
      *
      * @return $this
      */
-    public function method(Constraint|string $constraint): self
+    public function method($constraint): self
     {
         if ($this->matcher->hasMethodNameRule()) {
             throw new MethodNameAlreadyConfiguredException;
         }
 
-        if (is_string($constraint)) {
-            $this->configurableMethodNames ??= array_flip(array_map(
-                static fn (ConfigurableMethod $configurable) => strtolower($configurable->name()),
-                $this->configurableMethods
-            ));
+        $configurableMethodNames = array_map(
+            static function (ConfigurableMethod $configurable)
+            {
+                return strtolower($configurable->getName());
+            },
+            $this->configurableMethods
+        );
 
-            if (!array_key_exists(strtolower($constraint), $this->configurableMethodNames)) {
-                throw new MethodCannotBeConfiguredException($constraint);
-            }
+        if (is_string($constraint) && !in_array(strtolower($constraint), $configurableMethodNames, true)) {
+            throw new MethodCannotBeConfiguredException($constraint);
         }
 
         $this->matcher->setMethodNameRule(new Rule\MethodName($constraint));
@@ -239,12 +268,12 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
         }
     }
 
-    private function configuredMethod(): ?ConfigurableMethod
+    private function getConfiguredMethod(): ?ConfigurableMethod
     {
         $configuredMethod = null;
 
         foreach ($this->configurableMethods as $configurableMethod) {
-            if ($this->matcher->methodNameRule()->matchesName($configurableMethod->name())) {
+            if ($this->matcher->getMethodNameRule()->matchesName($configurableMethod->getName())) {
                 if ($configuredMethod !== null) {
                     return null;
                 }
@@ -261,7 +290,7 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
      */
     private function ensureTypeOfReturnValues(array $values): void
     {
-        $configuredMethod = $this->configuredMethod();
+        $configuredMethod = $this->getConfiguredMethod();
 
         if ($configuredMethod === null) {
             return;

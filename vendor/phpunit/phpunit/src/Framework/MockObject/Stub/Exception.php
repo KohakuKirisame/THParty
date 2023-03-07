@@ -19,7 +19,7 @@ use Throwable;
  */
 final class Exception implements Stub
 {
-    private readonly Throwable $exception;
+    private $exception;
 
     public function __construct(Throwable $exception)
     {
@@ -29,7 +29,7 @@ final class Exception implements Stub
     /**
      * @throws Throwable
      */
-    public function invoke(Invocation $invocation): never
+    public function invoke(Invocation $invocation): void
     {
         throw $this->exception;
     }

@@ -10,17 +10,7 @@ namespace NunoMaduro\Collision\Contracts\Adapters\Phpunit;
 interface HasPrintableTestCaseName
 {
     /**
-     * The printable test case name.
+     * Returns the test case name that should be used by the printer.
      */
-    public static function getPrintableTestCaseName(): string;
-
-    /**
-     * The printable test case method name.
-     */
-    public function getPrintableTestCaseMethodName(): string;
-
-    /**
-     * The "latest" printable test case method name.
-     */
-    public static function getLatestPrintableTestCaseMethodName(): string;
+    public function getPrintableTestCaseName(): string;
 }

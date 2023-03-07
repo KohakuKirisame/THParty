@@ -9,29 +9,36 @@
  */
 namespace SebastianBergmann\Comparator;
 
-use function assert;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Compares PHPUnit\Framework\MockObject\MockObject instances for equality.
  */
-final class MockObjectComparator extends ObjectComparator
+class MockObjectComparator extends ObjectComparator
 {
     /**
      * Returns whether the comparator can compare two values.
      *
      * @param mixed $expected The first value to compare
      * @param mixed $actual   The second value to compare
+     *
+     * @return bool
      */
-    public function accepts(mixed $expected, mixed $actual): bool
+    public function accepts($expected, $actual)
     {
         return $expected instanceof MockObject && $actual instanceof MockObject;
     }
 
-    protected function toArray(object $object): array
+    /**
+     * Converts an object to an array containing all of its private, protected
+     * and public properties.
+     *
+     * @param object $object
+     *
+     * @return array
+     */
+    protected function toArray($object)
     {
-        assert($object instanceof MockObject);
-
         $array = parent::toArray($object);
 
         unset($array['__phpunit_invocationMocker']);

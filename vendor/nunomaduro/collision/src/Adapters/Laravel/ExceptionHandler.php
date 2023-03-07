@@ -6,7 +6,7 @@ namespace NunoMaduro\Collision\Adapters\Laravel;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
-use NunoMaduro\Collision\Provider;
+use NunoMaduro\Collision\Contracts\Provider as ProviderContract;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleExceptionInterface;
 use Throwable;
 
@@ -62,8 +62,8 @@ final class ExceptionHandler implements ExceptionHandlerContract
         if ($e instanceof SymfonyConsoleExceptionInterface) {
             $this->appExceptionHandler->renderForConsole($output, $e);
         } else {
-            /** @var Provider $provider */
-            $provider = $this->container->make(Provider::class);
+            /** @var \NunoMaduro\Collision\Contracts\Provider $provider */
+            $provider = $this->container->make(ProviderContract::class);
 
             $handler = $provider->register()
                 ->getHandler()

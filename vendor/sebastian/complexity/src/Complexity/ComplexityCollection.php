@@ -21,7 +21,7 @@ final class ComplexityCollection implements Countable, IteratorAggregate
     /**
      * @psalm-var list<Complexity>
      */
-    private array $items;
+    private $items = [];
 
     public static function fromList(Complexity ...$items): self
     {

@@ -10,7 +10,7 @@ use Throwable;
 
 class LaravelRequestContextProvider extends RequestContextProvider
 {
-    protected LaravelRequest|SymphonyRequest|null $request;
+    protected null|SymphonyRequest|LaravelRequest $request;
 
     public function __construct(LaravelRequest $request)
     {

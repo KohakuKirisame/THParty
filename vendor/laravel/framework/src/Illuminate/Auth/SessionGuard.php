@@ -38,7 +38,7 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
      *
      * @var string
      */
-    public readonly string $name;
+    protected $name;
 
     /**
      * The user we last attempted to retrieve.
@@ -914,7 +914,7 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
      * Set the current user.
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @return void
+     * @return $this
      */
     public function setUser(AuthenticatableContract $user)
     {

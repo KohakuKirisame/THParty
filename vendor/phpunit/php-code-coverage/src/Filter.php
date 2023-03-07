@@ -12,8 +12,7 @@ namespace SebastianBergmann\CodeCoverage;
 use function array_keys;
 use function is_file;
 use function realpath;
-use function str_contains;
-use function str_starts_with;
+use function strpos;
 use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
 
 final class Filter
@@ -21,12 +20,12 @@ final class Filter
     /**
      * @psalm-var array<string,true>
      */
-    private array $files = [];
+    private $files = [];
 
     /**
      * @psalm-var array<string,bool>
      */
-    private array $isFileCache = [];
+    private $isFileCache = [];
 
     public function includeDirectory(string $directory, string $suffix = '.php', string $prefix = ''): void
     {
@@ -81,14 +80,14 @@ final class Filter
         }
 
         if ($filename === '-' ||
-            str_starts_with($filename, 'vfs://') ||
-            str_contains($filename, 'xdebug://debug-eval') ||
-            str_contains($filename, 'eval()\'d code') ||
-            str_contains($filename, 'runtime-created function') ||
-            str_contains($filename, 'runkit created function') ||
-            str_contains($filename, 'assert code') ||
-            str_contains($filename, 'regexp code') ||
-            str_contains($filename, 'Standard input code')) {
+            strpos($filename, 'vfs://') === 0 ||
+            strpos($filename, 'xdebug://debug-eval') !== false ||
+            strpos($filename, 'eval()\'d code') !== false ||
+            strpos($filename, 'runtime-created function') !== false ||
+            strpos($filename, 'runkit created function') !== false ||
+            strpos($filename, 'assert code') !== false ||
+            strpos($filename, 'regexp code') !== false ||
+            strpos($filename, 'Standard input code') !== false) {
             $isFile = false;
         } else {
             $isFile = is_file($filename);

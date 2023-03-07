@@ -1,0 +1,65 @@
+@font-face {
+	font-family:'Facon';
+	src: url('/font/Facon-2.ttf') format('truetype');
+}
+
+.first-cover{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: url(/storage/img/104050170_p0.jpg) no-repeat center/cover;
+	z-index:1;
+	overflow: hidden;
+}
+.top-title{
+	font-family: 'Facon';
+	transition: all 1.2s ease-in-out;
+	font-size: 3rem;
+}
+.bgFilter{
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	margin: 0 !important;
+	z-index: 2;
+}
+
+.title-glow{
+	text-shadow: 0 0 10px #ffffff;
+}
+.function-sticker{
+	width: 50%;
+	margin: 0 auto;
+}
+.hr-fade-content {
+	color: #a2a9b6;
+	border: 0;
+	font-size: 12px;
+	padding: 1em 0;
+	position: relative;
+	-webkit-mask-image: linear-gradient(to right, transparent, black, transparent);
+	mask-image: linear-gradient(to right, transparent, black, transparent);
+}
+.hr-fade-content:before{
+	content: attr(data-content);
+	position: absolute;
+	padding: 0 1ch;
+	line-height: 1px;
+	border: solid #d0d0d5;
+	border-width: 0 99vw;
+	width: fit-content;
+	white-space: nowrap;
+	left: 50%;
+	transform: translateX(-50%);
+}
+.hs{
+	transition: all 0.3s ease-in-out
+}
+.hs:hover{
+	box-shadow: rgba(0, 0, 0, 0.49) 0px 2px 8px 2px;
+}

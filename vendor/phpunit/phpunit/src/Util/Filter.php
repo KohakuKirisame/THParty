@@ -15,9 +15,9 @@ use function in_array;
 use function is_file;
 use function realpath;
 use function sprintf;
-use function str_starts_with;
+use function strpos;
 use PHPUnit\Framework\Exception;
-use PHPUnit\Framework\PhptAssertionFailedError;
+use PHPUnit\Framework\SyntheticError;
 use Throwable;
 
 /**
@@ -32,10 +32,10 @@ final class Filter
     {
         $filteredStacktrace = '';
 
-        if ($t instanceof PhptAssertionFailedError) {
-            $eTrace = $t->syntheticTrace();
-            $eFile  = $t->syntheticFile();
-            $eLine  = $t->syntheticLine();
+        if ($t instanceof SyntheticError) {
+            $eTrace = $t->getSyntheticTrace();
+            $eFile  = $t->getSyntheticFile();
+            $eLine  = $t->getSyntheticLine();
         } elseif ($t instanceof Exception) {
             $eTrace = $t->getSerializableTrace();
             $eFile  = $t->getFile();
@@ -73,14 +73,14 @@ final class Filter
         return $filteredStacktrace;
     }
 
-    private static function shouldPrintFrame(array $frame, string|false $prefix, ExcludeList $excludeList): bool
+    private static function shouldPrintFrame(array $frame, $prefix, ExcludeList $excludeList): bool
     {
         if (!isset($frame['file'])) {
             return false;
         }
 
         $file              = $frame['file'];
-        $fileIsNotPrefixed = $prefix === false || !str_starts_with($file, $prefix);
+        $fileIsNotPrefixed = $prefix === false || strpos($file, $prefix) !== 0;
 
         // @see https://github.com/sebastianbergmann/phpunit/issues/4033
         if (isset($GLOBALS['_SERVER']['SCRIPT_NAME'])) {

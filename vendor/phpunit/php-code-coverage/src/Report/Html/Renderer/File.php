@@ -95,10 +95,11 @@ use function ksort;
 use function range;
 use function sort;
 use function sprintf;
-use function str_ends_with;
 use function str_replace;
+use function substr;
 use function token_get_all;
 use function trim;
+use PHPUnit\Runner\BaseTestRunner;
 use SebastianBergmann\CodeCoverage\Node\File as FileNode;
 use SebastianBergmann\CodeCoverage\Util\Percentage;
 use SebastianBergmann\Template\Template;
@@ -111,9 +112,17 @@ final class File extends Renderer
     /**
      * @psalm-var array<int,true>
      */
-    private static array $keywordTokens        = [];
-    private static array $formattedSourceCache = [];
-    private int $htmlSpecialCharsFlags         = ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE;
+    private static $keywordTokens = [];
+
+    /**
+     * @var array
+     */
+    private static $formattedSourceCache = [];
+
+    /**
+     * @var int
+     */
+    private $htmlSpecialCharsFlags = ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE;
 
     public function render(FileNode $node, string $file): void
     {
@@ -889,7 +898,7 @@ final class File extends Renderer
         $result              = [''];
         $i                   = 0;
         $stringFlag          = false;
-        $fileEndsWithNewLine = str_ends_with($buffer, "\n");
+        $fileEndsWithNewLine = substr($buffer, -1) === "\n";
 
         unset($buffer);
 
@@ -996,21 +1005,42 @@ final class File extends Renderer
     {
         $testCSS = '';
 
-        switch ($testData['status']) {
-            case 'success':
-                $testCSS = match ($testData['size']) {
-                    'small'  => ' class="covered-by-small-tests"',
-                    'medium' => ' class="covered-by-medium-tests"',
-                    // no break
-                    default => ' class="covered-by-large-tests"',
-                };
+        if ($testData['fromTestcase']) {
+            switch ($testData['status']) {
+                case BaseTestRunner::STATUS_PASSED:
+                    switch ($testData['size']) {
+                        case 'small':
+                            $testCSS = ' class="covered-by-small-tests"';
 
-                break;
+                            break;
 
-            case 'failure':
-                $testCSS = ' class="danger"';
+                        case 'medium':
+                            $testCSS = ' class="covered-by-medium-tests"';
 
-                break;
+                            break;
+
+                        default:
+                            $testCSS = ' class="covered-by-large-tests"';
+
+                            break;
+                    }
+
+                    break;
+
+                case BaseTestRunner::STATUS_SKIPPED:
+                case BaseTestRunner::STATUS_INCOMPLETE:
+                case BaseTestRunner::STATUS_RISKY:
+                case BaseTestRunner::STATUS_WARNING:
+                    $testCSS = ' class="warning"';
+
+                    break;
+
+                case BaseTestRunner::STATUS_FAILURE:
+                case BaseTestRunner::STATUS_ERROR:
+                    $testCSS = ' class="danger"';
+
+                    break;
+            }
         }
 
         return sprintf(

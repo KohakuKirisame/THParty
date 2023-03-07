@@ -18,31 +18,110 @@ use function range;
  */
 final class File extends AbstractNode
 {
-    private array $lineCoverageData;
-    private array $functionCoverageData;
-    private readonly array $testData;
-    private int $numExecutableLines    = 0;
-    private int $numExecutedLines      = 0;
-    private int $numExecutableBranches = 0;
-    private int $numExecutedBranches   = 0;
-    private int $numExecutablePaths    = 0;
-    private int $numExecutedPaths      = 0;
-    private array $classes             = [];
-    private array $traits              = [];
-    private array $functions           = [];
+    /**
+     * @var array
+     */
+    private $lineCoverageData;
 
     /**
-     * @psalm-return array{linesOfCode: int, commentLinesOfCode: int, nonCommentLinesOfCode: int}
+     * @var array
      */
-    private readonly array $linesOfCode;
-    private ?int $numClasses         = null;
-    private int $numTestedClasses    = 0;
-    private ?int $numTraits          = null;
-    private int $numTestedTraits     = 0;
-    private ?int $numMethods         = null;
-    private ?int $numTestedMethods   = null;
-    private ?int $numTestedFunctions = null;
-    private array $codeUnitsByLine   = [];
+    private $functionCoverageData;
+
+    /**
+     * @var array
+     */
+    private $testData;
+
+    /**
+     * @var int
+     */
+    private $numExecutableLines = 0;
+
+    /**
+     * @var int
+     */
+    private $numExecutedLines = 0;
+
+    /**
+     * @var int
+     */
+    private $numExecutableBranches = 0;
+
+    /**
+     * @var int
+     */
+    private $numExecutedBranches = 0;
+
+    /**
+     * @var int
+     */
+    private $numExecutablePaths = 0;
+
+    /**
+     * @var int
+     */
+    private $numExecutedPaths = 0;
+
+    /**
+     * @var array
+     */
+    private $classes = [];
+
+    /**
+     * @var array
+     */
+    private $traits = [];
+
+    /**
+     * @var array
+     */
+    private $functions = [];
+
+    /**
+     * @psalm-var array{linesOfCode: int, commentLinesOfCode: int, nonCommentLinesOfCode: int}
+     */
+    private $linesOfCode;
+
+    /**
+     * @var int
+     */
+    private $numClasses;
+
+    /**
+     * @var int
+     */
+    private $numTestedClasses = 0;
+
+    /**
+     * @var int
+     */
+    private $numTraits;
+
+    /**
+     * @var int
+     */
+    private $numTestedTraits = 0;
+
+    /**
+     * @var int
+     */
+    private $numMethods;
+
+    /**
+     * @var int
+     */
+    private $numTestedMethods;
+
+    /**
+     * @var int
+     */
+    private $numTestedFunctions;
+
+    /**
+     * @var array
+     */
+    private $codeUnitsByLine = [];
 
     /**
      * @psalm-param array{linesOfCode: int, commentLinesOfCode: int, nonCommentLinesOfCode: int} $linesOfCode

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PartyController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,30 +18,33 @@ use App\Http\Controllers\PartyController;
 */
 
 //子域名路由
-/*
-Route::domain('{act}.thparty.fun')->group(function () {
-    Route::get('/', function ($act) {
-        if($act == 'www'){
-            return redirect("https://thparty.fun");
-        }
-        return redirect("https://".$act.'.edu.cn');
-    });
-});*/
 
-//本站路由
-Route::domain("www.thparty.fun")->group(function (){
-	Route::get('/', function () {
-		return view('beian');
+Route::domain('www.thparty.fun')->group(function (){
+	Route::any('/', function () {
+		return redirect('https://thparty.fun');
+	});
+	Route::any('/{any}', function () {
+		return redirect('https://thparty.fun'.$_SERVER['REQUEST_URI']);
 	});
 });
-Route::domain('thparty.fun')->group(function () {
-    Route::get('/', function () {
-        return view('beian');
-    });
-    Route::get('/About', function () {
-        return view('about');
-    });
+
+Route::domain('{domain}.thparty.fun')->group(function () {
+    Route::get('/', [PartyController::class, 'partyHomepage']);
 });
 
-Route::get("/U",[PartyController::class,'createParty']);
+//本站路由
+	Route::get('/', function () {
+        return view('home');
+    });
+    Route::get('/About', [HomeController::class, 'aboutPage']);
+	Route::get('/Register', function () {
+		return view('register');
+	});
+	Route::get('/Login',[UserController::class,"loginPage"]);
 
+	Route::prefix("Actions")->group(function (){
+		Route::post("/SendSMSCaptcha",[UserController::class,'sendCaptcha']);
+		Route::post("/Register",[UserController::class,'register']);
+		Route::match(['get','post'],'/Logout',[UserController::class,'logout']);
+		Route::post('/Login',[UserController::class,'login']);
+	});

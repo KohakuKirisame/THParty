@@ -9,8 +9,6 @@
  */
 namespace SebastianBergmann\LinesOfCode;
 
-use function assert;
-use function file_get_contents;
 use function substr_count;
 use PhpParser\Error;
 use PhpParser\Lexer;
@@ -51,7 +49,7 @@ final class Counter
         } catch (Error $error) {
             throw new RuntimeException(
                 $error->getMessage(),
-                $error->getCode(),
+                (int) $error->getCode(),
                 $error
             );
         }
@@ -77,7 +75,7 @@ final class Counter
         } catch (Error $error) {
             throw new RuntimeException(
                 $error->getMessage(),
-                $error->getCode(),
+                (int) $error->getCode(),
                 $error
             );
         }

@@ -10,9 +10,9 @@
 namespace PHPUnit\Runner\Filter;
 
 use function array_map;
-use function array_push;
+use function array_merge;
 use function in_array;
-use function spl_object_id;
+use function spl_object_hash;
 use PHPUnit\Framework\TestSuite;
 use RecursiveFilterIterator;
 use RecursiveIterator;
@@ -23,9 +23,9 @@ use RecursiveIterator;
 abstract class GroupFilterIterator extends RecursiveFilterIterator
 {
     /**
-     * @psalm-var list<int>
+     * @var string[]
      */
-    protected array $groupTests = [];
+    protected $groupTests = [];
 
     public function __construct(RecursiveIterator $iterator, array $groups, TestSuite $suite)
     {
@@ -34,11 +34,11 @@ abstract class GroupFilterIterator extends RecursiveFilterIterator
         foreach ($suite->getGroupDetails() as $group => $tests) {
             if (in_array((string) $group, $groups, true)) {
                 $testHashes = array_map(
-                    'spl_object_id',
+                    'spl_object_hash',
                     $tests
                 );
 
-                array_push($this->groupTests, ...$testHashes);
+                $this->groupTests = array_merge($this->groupTests, $testHashes);
             }
         }
     }
@@ -51,8 +51,8 @@ abstract class GroupFilterIterator extends RecursiveFilterIterator
             return true;
         }
 
-        return $this->doAccept(spl_object_id($test));
+        return $this->doAccept(spl_object_hash($test));
     }
 
-    abstract protected function doAccept(int $id): bool;
+    abstract protected function doAccept(string $hash);
 }

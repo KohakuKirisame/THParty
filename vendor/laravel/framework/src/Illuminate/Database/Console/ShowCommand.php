@@ -44,15 +44,14 @@ class ShowCommand extends DatabaseInspectionCommand
 
         $connection = $connections->connection($database = $this->input->getOption('database'));
 
-        $doctrineConnection = $connection->getDoctrineConnection();
         $schema = $connection->getDoctrineSchemaManager();
 
-        $this->registerTypeMappings($doctrineConnection->getDatabasePlatform());
+        $this->registerTypeMappings($schema->getDatabasePlatform());
 
         $data = [
             'platform' => [
                 'config' => $this->getConfigFromDatabase($database),
-                'name' => $this->getPlatformName($doctrineConnection->getDatabasePlatform(), $database),
+                'name' => $this->getPlatformName($schema->getDatabasePlatform(), $database),
                 'open_connections' => $this->getConnectionCount($connection),
             ],
             'tables' => $this->tables($connection, $schema),

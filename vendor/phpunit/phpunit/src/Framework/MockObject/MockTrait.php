@@ -16,12 +16,15 @@ use function class_exists;
  */
 final class MockTrait implements MockType
 {
-    private readonly string $classCode;
+    /**
+     * @var string
+     */
+    private $classCode;
 
     /**
-     * @psalm-var class-string
+     * @var class-string
      */
-    private readonly string $mockName;
+    private $mockName;
 
     /**
      * @psalm-param class-string $mockName
@@ -44,7 +47,7 @@ final class MockTrait implements MockType
         return $this->mockName;
     }
 
-    public function classCode(): string
+    public function getClassCode(): string
     {
         return $this->classCode;
     }

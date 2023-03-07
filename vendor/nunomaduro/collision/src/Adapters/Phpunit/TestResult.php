@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace NunoMaduro\Collision\Adapters\Phpunit;
 
 use NunoMaduro\Collision\Contracts\Adapters\Phpunit\HasPrintableTestCaseName;
-use NunoMaduro\Collision\Exceptions\ShouldNotHappen;
-use PHPUnit\Event\Code\Test;
-use PHPUnit\Event\Code\TestMethod;
-use PHPUnit\Event\Code\Throwable;
-use PHPUnit\Event\Test\BeforeFirstTestMethodErrored;
+use PHPUnit\Framework\TestCase;
+use Throwable;
 
 /**
  * @internal
@@ -22,11 +19,7 @@ final class TestResult
 
     public const INCOMPLETE = 'incomplete';
 
-    public const TODO = 'todo';
-
     public const RISKY = 'risky';
-
-    public const DEPRECATED = 'deprecated';
 
     public const WARN = 'warnings';
 
@@ -34,126 +27,103 @@ final class TestResult
 
     public const PASS = 'passed';
 
-    public string $id;
-
-    public string $testCaseName;
-
-    public string $description;
-
-    public string $type;
-
-    public string $compactIcon;
-
-    public string $icon;
-
-    public string $compactColor;
-
-    public string $color;
-
-    public float $duration;
-
-    public ?Throwable $throwable;
-
-    public string $warning = '';
+    /**
+     * @readonly
+     *
+     * @var string
+     */
+    public $testCaseName;
 
     /**
-     * Creates a new TestResult instance.
+     * @readonly
+     *
+     * @var string
      */
-    private function __construct(string $id, string $testCaseName, string $description, string $type, string $icon, string $compactIcon, string $color, string $compactColor, Throwable $throwable = null)
+    public $description;
+
+    /**
+     * @readonly
+     *
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @readonly
+     *
+     * @var string
+     */
+    public $icon;
+
+    /**
+     * @readonly
+     *
+     * @var string
+     */
+    public $color;
+
+    /**
+     * @readonly
+     *
+     * @var Throwable|null
+     */
+    public $throwable;
+
+    /**
+     * @readonly
+     *
+     * @var string
+     */
+    public $warning = '';
+
+    /**
+     * Test constructor.
+     */
+    private function __construct(string $testCaseName, string $description, string $type, string $icon, string $color, Throwable $throwable = null)
     {
-        $this->id = $id;
         $this->testCaseName = $testCaseName;
         $this->description = $description;
         $this->type = $type;
         $this->icon = $icon;
-        $this->compactIcon = $compactIcon;
         $this->color = $color;
-        $this->compactColor = $compactColor;
         $this->throwable = $throwable;
-
-        $this->duration = 0.0;
 
         $asWarning = $this->type === TestResult::WARN
              || $this->type === TestResult::RISKY
              || $this->type === TestResult::SKIPPED
-             || $this->type === TestResult::DEPRECATED
              || $this->type === TestResult::INCOMPLETE;
 
         if ($throwable instanceof Throwable && $asWarning) {
-            $this->warning = trim((string) preg_replace("/\r|\n/", ' ', $throwable->message()));
+            $this->warning = trim((string) preg_replace("/\r|\n/", ' ', $throwable->getMessage()));
         }
-    }
-
-    /**
-     * Sets the telemetry information.
-     */
-    public function setDuration(float $duration): void
-    {
-        $this->duration = $duration;
     }
 
     /**
      * Creates a new test from the given test case.
      */
-    public static function fromTestCase(Test $test, string $type, Throwable $throwable = null): self
+    public static function fromTestCase(TestCase $testCase, string $type, Throwable $throwable = null): self
     {
-        if (! $test instanceof TestMethod) {
-            throw new ShouldNotHappen();
-        }
+        $testCaseName = State::getPrintableTestCaseName($testCase);
 
-        if (is_subclass_of($test->className(), HasPrintableTestCaseName::class)) {
-            $testCaseName = $test->className()::getPrintableTestCaseName();
-        } else {
-            $testCaseName = $test->className();
-        }
-
-        $description = self::makeDescription($test);
+        $description = self::makeDescription($testCase);
 
         $icon = self::makeIcon($type);
 
-        $compactIcon = self::makeCompactIcon($type);
-
         $color = self::makeColor($type);
 
-        $compactColor = self::makeCompactColor($type);
-
-        return new self($test->id(), $testCaseName, $description, $type, $icon, $compactIcon, $color, $compactColor, $throwable);
-    }
-
-    /**
-     * Creates a new test from the given test case.
-     */
-    public static function fromBeforeFirstTestMethodErrored(BeforeFirstTestMethodErrored $event): self
-    {
-        if (is_subclass_of($event->testClassName(), HasPrintableTestCaseName::class)) {
-            $testCaseName = $event->testClassName()::getPrintableTestCaseName();
-        } else {
-            $testCaseName = $event->testClassName();
-        }
-
-        $description = '';
-
-        $icon = self::makeIcon(self::FAIL);
-
-        $compactIcon = self::makeCompactIcon(self::FAIL);
-
-        $color = self::makeColor(self::FAIL);
-
-        $compactColor = self::makeCompactColor(self::FAIL);
-
-        return new self($testCaseName, $testCaseName, $description, self::FAIL, $icon, $compactIcon, $color, $compactColor, $event->throwable());
+        return new self($testCaseName, $description, $type, $icon, $color, $throwable);
     }
 
     /**
      * Get the test case description.
      */
-    public static function makeDescription(TestMethod $test): string
+    public static function makeDescription(TestCase $testCase): string
     {
-        if (is_subclass_of($test->className(), HasPrintableTestCaseName::class)) {
-            return $test->className()::getLatestPrintableTestCaseMethodName();
-        }
+        $name = $testCase->getName(false);
 
-        $name = $test->name();
+        if ($testCase instanceof HasPrintableTestCaseName) {
+            return $name;
+        }
 
         // First, lets replace underscore by spaces.
         $name = str_replace('_', ' ', $name);
@@ -170,6 +140,15 @@ final class TestResult
         // Lower case everything
         $name = mb_strtolower($name);
 
+        // Add the dataset name if it has one
+        if ($dataName = $testCase->dataName()) {
+            if (is_int($dataName)) {
+                $name .= sprintf(' with data set #%d', $dataName);
+            } else {
+                $name .= sprintf(' with data set "%s"', $dataName);
+            }
+        }
+
         return $name;
     }
 
@@ -179,71 +158,20 @@ final class TestResult
     public static function makeIcon(string $type): string
     {
         switch ($type) {
-            case self::DEPRECATED:
-                return 'd';
             case self::FAIL:
                 return '⨯';
             case self::SKIPPED:
                 return '-';
-            case self::WARN:
             case self::RISKY:
                 return '!';
             case self::INCOMPLETE:
                 return '…';
-            case self::TODO:
-                return '↓';
+            case self::WARN:
+                return '!';
             case self::RUNS:
                 return '•';
             default:
                 return '✓';
-        }
-    }
-
-    /**
-     * Get the test case compact icon.
-     */
-    public static function makeCompactIcon(string $type): string
-    {
-        switch ($type) {
-            case self::DEPRECATED:
-                return 'd';
-            case self::FAIL:
-                return '⨯';
-            case self::SKIPPED:
-                return 's';
-            case self::WARN:
-            case self::RISKY:
-                return '!';
-            case self::INCOMPLETE:
-                return 'i';
-            case self::TODO:
-                return 't';
-            case self::RUNS:
-                return '•';
-            default:
-                return '.';
-        }
-    }
-
-    /**
-     * Get the test case compact color.
-     */
-    public static function makeCompactColor(string $type): string
-    {
-        switch ($type) {
-            case self::FAIL:
-                return 'red';
-            case self::DEPRECATED:
-            case self::SKIPPED:
-            case self::INCOMPLETE:
-            case self::RISKY:
-            case self::WARN:
-            case self::RUNS:
-                return 'yellow';
-            case self::TODO:
-                return 'cyan';
-            default:
-                return 'gray';
         }
     }
 
@@ -253,11 +181,8 @@ final class TestResult
     public static function makeColor(string $type): string
     {
         switch ($type) {
-            case self::TODO:
-                return 'cyan';
             case self::FAIL:
                 return 'red';
-            case self::DEPRECATED:
             case self::SKIPPED:
             case self::INCOMPLETE:
             case self::RISKY:

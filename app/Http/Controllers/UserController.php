@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Developer;
 use App\Models\User;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
+use Qcloud\Cos\Client;
+use TencentCloud\Sms\V20210111\SmsClient;
+use TencentCloud\Sms\V20210111\Models\SendSmsRequest;
+use TencentCloud\Common\Exception\TencentCloudSDKException;
+use TencentCloud\Common\Credential;
 
 class UserController extends BaseController{
 	/*
@@ -27,20 +33,23 @@ class UserController extends BaseController{
 			//未登录，验证登录信息
 			$credentials = $request->validate([
 				//验证规则，用户名和密码不能为空，密码最小长度为8
-				'username' => ['required', 'max:255'],
+				'phone' => ['required', 'max:255'],
 				'password' => ['required', 'min:8'],
 			],[
 				//错误信息
-				'username.required' => '用户名不能为空',
-				'username.max' => '用户名最大长度为255',
+				'phone.required' => '手机号不能为空',
+				'phone.max' => '手机号最大长度为255',
 				'password.required' => '密码不能为空',
 				'password.min' => '密码最小长度为8',
 			]);
 			//验证通过，尝试登录
-			if(Auth::attempt($credentials)){
+			if(Auth::attempt($credentials,filter_var($request->input("remember"), FILTER_VALIDATE_BOOLEAN))){
 				//登录成功，重定向
 				$request->session()->regenerate();
-				return redirect();
+				$user=User::where(['phone'=>$credentials['phone']])->first();
+				$user->last_ip=$request->ip();
+				$user->save();
+				return redirect("/");
 			}
 			//登录失败，返回上一页
 			return back()->withErrors([
@@ -83,18 +92,46 @@ class UserController extends BaseController{
 				//验证规则，用户名和密码不能为空，密码最小长度为8
 				'username' => ['required', 'max:255'],
 				'captcha' => ['required'],
-				'phone' => ['required'],
+				'phone' => ['required','unique:users'],
 				'password' => ['required', 'min:8'],
+			],[
+				//错误信息
+				'username.required' => '用户名不能为空',
+				'username.max' => '用户名最大长度为255',
+				'captcha.required' => '验证码不能为空',
+				'phone.required' => '手机号不能为空',
+				'phone.unique' => '手机号已被注册',
+				'password.required' => '密码不能为空',
+				'password.min' => '密码最小长度为8',
 			]);
+			//验证验证码
+			if(time()>$request->session()->get('time')+300){
+				$request->session()->forget('captcha');
+				$request->session()->forget('phone');
+				$request->session()->forget('time');
+				return back()->withErrors([
+					//错误信息
+					'captcha' => '验证码已过期',
+				])->withInput();
+			}
+			if (strval($credentials['captcha']) != $request->session()->get('code') || $credentials['phone'] != $request->session()->get('phone')) {
+				return back()->withErrors([
+					//错误信息
+					'captcha' => '验证码错误',
+				])->withInput();
+			}
 			//验证通过，尝试注册
 			$user=new User();
 			$user->username=$credentials['username'];
-			$user->phone=$credentials['phone'];
+			$user->phone=intval($credentials['phone']);
 			$user->password=Hash::make($credentials['password']);
+			$user->reg_ip=$request->ip();
 			if($user->save()){
 				//注册成功，重定向
+				$request->session()->forget('captcha');
+				$request->session()->forget('phone');
 				$request->session()->regenerate();
-				return redirect();
+				return redirect("/");
 			}
 			//注册失败，返回上一页
 			return back()->withErrors([
@@ -109,5 +146,123 @@ class UserController extends BaseController{
 				],
 			])->withInput();
 		}
+	}
+	public function changeUserInfo(Request $request) {
+		/**
+		 * 更改用户名
+		 * @param Request $request
+		 * 包含修改后的 用户名、邮箱、QQ号、个人简介、个人签名
+		 * @return \Illuminate\Routing\Redirector
+		 * 返回重定向
+		 */
+		if (Auth::check()) {
+			$uid = Auth::id();
+			$credentials = $request->validate([
+				'username' => ['required', 'max:255'],
+				'email' => ['required', 'email', 'max:255'],
+				'qq' => ['numeric','integer','min:100000','max:9999999999999'],
+				'introduction' => [],
+				'sign' => ['max:255']
+			],[
+				'username.required' => '你是？',
+				'username.max' => '名称过长',
+				'email.required' => '幻想乡也有邮箱啦',
+				'email.max' => '就没有短一点的邮箱吗',
+				'qq.numeric' => '你这QQ丁真吗',
+				'qq.max' => '你这QQ丁真吗',
+				'sign' => '短些撒'
+			]);
+			$u = User::where(["id"=>$uid])->first();
+			$u->username = $credentials['username'];
+			$u->email = $credentials['email'];
+			$u->qq = $credentials['qq'];
+			$u->introduction = $credentials['introduction'];
+			$u->sign = $credentials['sign'];
+			$u->save();
+			return back()->with('message','修改成功喵！');
+		}
+		return back()->with('message','操作被摩多罗神必吞掉了，，，');
+	}
+
+	public function sendCaptcha(Request $request){
+		/**
+		 * 发送验证码
+		 * @param Request $request
+		 * 包含手机号
+		 * @return 0
+		 */
+		$credentials = $request->validate([
+			'phone' => ['required'],
+		]);
+		$phone = strval($credentials['phone']);
+		$code = strval(rand(100000,999999));
+		try{
+			$cred = new Credential(env("TC_SECRET_ID"), env("TC_SECRET_KEY"));
+			$client=new SmsClient($cred, "ap-beijing");
+			$req = new SendSmsRequest();
+			$req->SmsSdkAppId = env("TC_SMS_APPID");
+			$req->SignName = env("TC_SMS_SIGN");
+			$req->TemplateId = env("TC_SMS_TEMPLATEID");
+			$req->PhoneNumberSet = array($phone);
+			$req->TemplateParamSet = array($code);
+			$resp = $client->SendSms($req);
+
+			$request->session()->put("phone",$phone);
+			$request->session()->put("code",$code);
+			$request->session()->put("time",time());
+			print_r($resp->toJsonString());
+
+		}catch (TencentCloudSDKException $e) {
+			echo($e);
+		}
+	}
+
+	public function loginPage(){
+		/**
+		 * 登录页面
+		 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+		 * 返回登录页面
+		 */
+		if(Auth::check()){
+			return back();
+		}else{
+			return view("login");
+		}
+	}
+
+	static public function getAvatar(int $uid=0){
+		/**
+		 * 获取用户头像，未指定用户则返回自己，如果用户没有头像则返回默认头像
+		 * @param $uid
+		 * 用户id
+		 * @return string
+		 * 返回头像地址
+		 */
+		if($uid==0){
+			if (Auth::check()) {
+				$uid=Auth::id();
+			}else{
+				return env("TC_COS_CDNURL")."/avatar/default.png";
+			}
+		}
+		$cosClient= new Client([
+			'region' => env("TC_COS_REGION"),
+			'schema' => 'https',
+			'credentials' => [
+				'secretId' => env("TC_SECRET_ID"),
+				'secretKey' => env("TC_SECRET_KEY"),
+			],
+		]);
+		$result = $cosClient->doesObjectExist(env("TC_COS_BUCKET"), "/avatar/".$uid.".png");
+		if($result){
+			return env("TC_COS_CDNURL")."/avatar/".$uid.".png";
+		}else{
+			if (Developer::where(["uid"=>$uid])->exists()){
+				$git=Developer::where(["uid"=>$uid])->first()->github;
+				return "https://avatars.githubusercontent.com/".$git;
+			}
+			return env("TC_COS_CDNURL")."/avatar/default.png";
+		}
+
 	}
 }

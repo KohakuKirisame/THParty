@@ -19,7 +19,10 @@ This project started from TouHou fan party of BUAA. Then we set a greater goal f
 
 ## 已实现 Released
 
-- none
+- 用户系统（部分） User System (Partially)
+  - 用户注册 Register
+  - 用户登录 Login
+- 关于页面 About Page
 
 ## 待实现 Developing
 
@@ -91,6 +94,7 @@ You need to comply with the following code specifications:
 - Android开发 Android Developer
 - iOS开发 iOS Developer
 - 小程序开发 Mini Program Developer
+- 宣传推广 Publicity and Promotion
 - 法律顾问 Legal Advisor
 - 客户服务 Customer Service
 

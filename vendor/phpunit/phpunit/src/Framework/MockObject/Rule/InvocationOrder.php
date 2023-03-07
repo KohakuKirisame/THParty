@@ -20,11 +20,11 @@ use PHPUnit\Framework\SelfDescribing;
 abstract class InvocationOrder implements SelfDescribing, Verifiable
 {
     /**
-     * @psalm-var list<BaseInvocation>
+     * @var BaseInvocation[]
      */
-    private array $invocations = [];
+    private $invocations = [];
 
-    public function numberOfInvocations(): int
+    public function getInvocationCount(): int
     {
         return count($this->invocations);
     }
@@ -34,16 +34,14 @@ abstract class InvocationOrder implements SelfDescribing, Verifiable
         return count($this->invocations) > 0;
     }
 
-    final public function invoked(BaseInvocation $invocation): void
+    final public function invoked(BaseInvocation $invocation)
     {
         $this->invocations[] = $invocation;
 
-        $this->invokedDo($invocation);
+        return $this->invokedDo($invocation);
     }
 
     abstract public function matches(BaseInvocation $invocation): bool;
 
-    protected function invokedDo(BaseInvocation $invocation): void
-    {
-    }
+    abstract protected function invokedDo(BaseInvocation $invocation);
 }

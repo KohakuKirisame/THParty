@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace NunoMaduro\Collision;
 
+use NunoMaduro\Collision\Contracts\ArgumentFormatter as ArgumentFormatterContract;
+
 /**
  * @internal
  *
  * @see \Tests\Unit\ArgumentFormatterTest
  */
-final class ArgumentFormatter
+final class ArgumentFormatter implements ArgumentFormatterContract
 {
     private const MAX_STRING_LENGTH = 1000;
 
+    /**
+     * {@inheritdoc}
+     */
     public function format(array $arguments, bool $recursive = true): string
     {
         $result = [];

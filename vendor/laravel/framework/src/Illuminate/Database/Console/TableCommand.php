@@ -45,7 +45,7 @@ class TableCommand extends DatabaseInspectionCommand
 
         $schema = $connection->getDoctrineSchemaManager();
 
-        $this->registerTypeMappings($connection->getDoctrineConnection()->getDatabasePlatform());
+        $this->registerTypeMappings($schema->getDatabasePlatform());
 
         $table = $this->argument('table') ?: $this->components->choice(
             'Which table would you like to inspect?',
@@ -56,7 +56,7 @@ class TableCommand extends DatabaseInspectionCommand
             return $this->components->warn("Table [{$table}] doesn't exist.");
         }
 
-        $table = $schema->introspectTable($table);
+        $table = $schema->listTableDetails($table);
 
         $columns = $this->columns($table);
         $indexes = $this->indexes($table);
