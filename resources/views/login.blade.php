@@ -13,16 +13,23 @@
 				<form method="post" id="loginForm" action="/Actions/Login">
 					@csrf
 					<div class="mb-3">
+						<label for="username" class="form-label">用户名</label>
 						<input type="text" class="form-control" name="phone" id="phone" placeholder="手机号" />
 					</div>
 					<div class="mb-3">
+						<label for="password" class="form-label">密码</label>
 						<input type="password" class="form-control" name="password" id="password" placeholder="密码" />
 					</div>
-
-					<div class="mb-3 form-check">
-						<input type="checkbox" class="form-check-input" id="remember" name="remember">
-						<label class="form-check-label" for="remember">记住我</label>
+					<div class="mb-3 form-check d-flex justify-content-between align-items-center">
+						<div>
+							<input type="checkbox" class="form-check-input" id="remember" name="remember">
+							<label class="form-check-label" for="remember">记住我</label>
+						</div>
+						<div>
+							<a href="/Actions/Logout">忘记密码</a>
+						</div>
 					</div>
+
 				</form>
 				<div class="row justify-content-around px-2 mt-4">
 					<a href="/Register" class="btn btn-outline-primary col-3">注册</a>
