@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Developer;
+use App\Models\Party;
+use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
@@ -356,5 +358,42 @@ class UserController extends BaseController{
 			return env("TC_COS_CDNURL")."/avatar/default.png";
 		}
 
+	}
+
+	static function checkPrivilege(int $uid,int $privilege,int $pid=0) {
+		/**
+		 * 检查用户权限
+		 * @param $uid
+		 * 用户id
+		 * @param $privilege
+		 * 权限
+		 * @param $pid
+		 * 聚会id
+		 * @return bool
+		 * 返回是否有权限
+		 */
+		if($pid==0){
+			//查网站管理员（还没写）
+		}else{
+			$party=Party::where(["id"=>$pid])->first();
+			if ($party->leader==$uid){
+				return true;
+			}
+			$staffs=Staff::where('pid',$pid)->get();
+			$s=[];
+			foreach ($staffs as $staff){
+				$s[]=$staff->uid;
+			}
+			if (in_array($uid,$s)){
+				if (in_array($privilege,explode(",",Staff::where(["uid"=>$uid,"pid"=>$pid])->first()->privilege))) {
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		}
+		return false;
 	}
 }
