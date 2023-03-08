@@ -79,10 +79,7 @@ class StaffController extends BaseController {
 			$party = Party::where(["id"=>$credentials['pid']])->first();
 			if($party->leader == $uid){
 				//鉴权通过，删除staff
-				$Staff = Staff::where([
-					['pid' , $credentials['pid']],
-					['uid' , $credentials['uid']],
-				])->get();
+				$Staff = Staff::where(['pid'=>$credentials['pid'],'uid'=>$credentials['uid']])->first();
 				$Staff->delete();
 				return redirect();
 				//暂时不知道重定向到哪

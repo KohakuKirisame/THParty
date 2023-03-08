@@ -385,7 +385,8 @@ class UserController extends BaseController{
 				$s[]=$staff->uid;
 			}
 			if (in_array($uid,$s)){
-				if (in_array($privilege,explode(",",Staff::where(["uid"=>$uid,"pid"=>$pid])->first()->privilege))) {
+				$staff=Staff::where(["uid"=>$uid,"pid"=>$pid])->first();
+				if (in_array($privilege,explode(",",$staff->privilege))||$staff->role==0) {
 					return true;
 				}else{
 					return false;
