@@ -8,7 +8,7 @@ use Illuminate\Routing\Controller as BaseController;
 use App\Models\Staff;
 use App\Models\Party;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;\
+use Illuminate\Support\Facades\Auth;
 class StaffController extends BaseController {
 	/**
 	 * Staff控制器
