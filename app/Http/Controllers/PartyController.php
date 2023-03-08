@@ -100,7 +100,7 @@ class PartyController extends BaseController {
 				 * 活动域名不能为空，最大长度为64，只能包含字母、数字、破折号（-）以及下划线（_）
 				 * 活动域名不能重复
 				 */
-
+                  'pid' => ['required'],
 				'title' => ['required', 'max:255'],
 				'subtitle' => ['max:255'],
 				'type' => ['required', 'numeric', 'min:0', 'max:2'],
@@ -109,6 +109,7 @@ class PartyController extends BaseController {
 				'location' => ['required','max:255'],
 				'domain' => ['required','max:64','alpha_dash','unique:parties,domain'],
 			],[
+				'pid.required'=>'pid不能为空！',
 				'title.required' => '举办了幻想的活动？活动名称不能为空！',
 				'title.max' => '活动名称过长啦！',
 				'subtitle.max' => '活动副标题过长啦',
@@ -125,7 +126,7 @@ class PartyController extends BaseController {
 				'domain.alpha_dash' => '阿求的岁月史书所记录的域名只能包含字母、数字、破折号（-）以及下划线（_）',
 			]);
 			//信息合理性验证通过，开始鉴权，先根据pid找到活动信息表
-			$party = Party::find(1)->first();
+			$party = Party::where(["id"=>$credentials['pid']])->first();
 			if($party->leader == $uid){
 				//鉴权通过，用新信息填充覆盖
 				$party->title = $credentials['title'];
