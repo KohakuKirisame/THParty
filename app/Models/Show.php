@@ -10,6 +10,8 @@ class Show extends Model {
 		'pid',
 		'introduction',
 		'public',
+		'start',
+		'end',
 	];
 
 }
