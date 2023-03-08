@@ -367,6 +367,8 @@ class UserController extends BaseController{
 		 * 用户id
 		 * @param $privilege
 		 * 权限
+		 * @param $pid
+		 * 聚会id
 		 * @return bool
 		 * 返回是否有权限
 		 */
