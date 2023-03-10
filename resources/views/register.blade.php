@@ -7,6 +7,7 @@
 </head>
 <body>
 <div class="container my-5" id="mainContainer">
+	@include('components.navbar')
 	<div class="row justify-content-center">
 		<div class="card shadow-lg col-12 col-md-9 col-lg-6 opacity-75">
 			<div class="card-body">
