@@ -136,6 +136,7 @@ class PartyController extends BaseController {
 				$party->end = $credentials['end'];
 				$party->location = $credentials['location'];
 				$party->domain = $credentials['domain'];
+				$party->information = $credentials['information'];
 				if($party->type == 0){
 					$party->actived = 1; //如果是个人活动，直接激活
 				}else{
@@ -160,11 +161,15 @@ class PartyController extends BaseController {
 		 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 		 */
 		$party = Party::where('domain',$domain)->first();
+		$leader=$party->user;
 		if($party == null){
 			return view('errors.404');
 		}
+		$shows=ShowController::getShows($party->id);
 		return view('party.home',[
 			'party' => $party,
+			'leader' => $leader,
+			'shows' => $shows,
 		]);
 	}
 }

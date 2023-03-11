@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Show;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class ShowController extends BaseController {
 	/**
@@ -23,20 +24,8 @@ class ShowController extends BaseController {
 		 */
 		$shows = explode(",", Party::where('id', $pid)->first()->shows);
 		$shows = Show::whereIn('id', $shows)
-			->oederByRaw('FIND_IN_SET(id,"' . implode(',', $shows) . '")')
+			->orderByRaw('FIND_IN_SET(id,"' . implode(',', $shows) . '")')
 			->get();
-		foreach ($shows as $show) {
-			$actors = $show->actors;
-			if (!empty($actors)) {
-				$show->actors = [];
-				$actors = explode(',', $actors);
-				foreach ($actors as $actor) {
-					$show->actors[] = User::where('id', $actor)->first();
-				}
-			} else {
-				continue;
-			}
-		}
 		return $shows;
 	}
 
