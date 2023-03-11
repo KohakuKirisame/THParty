@@ -1,8 +1,3 @@
-		</div>
-	</div>
-</div>
-
-
 <footer class="" style="z-index: 0">
 	<div class="container-fluid bg-dark">
 		<div class="row">
