@@ -22,13 +22,13 @@
 					<div class="collapse" id="parties">
 						<ul class="nav sub-menu">
 							<li class="nav-item">
-								<a href="pages/email/inbox.html" class="nav-link">我主办的</a>
+								<a href="" class="nav-link">我主办的</a>
 							</li>
 							<li class="nav-item">
-								<a href="pages/email/read.html" class="nav-link">我作为staff的</a>
+								<a href="" class="nav-link">我作为staff的</a>
 							</li>
 							<li class="nav-item">
-								<a href="pages/email/compose.html" class="nav-link">我参加的</a>
+								<a href="" class="nav-link">我参加的</a>
 							</li>
 						</ul>
 					</div>
@@ -50,12 +50,12 @@
 
 				<li class="nav-item nav-category"><b>个人</b></li>
 				<li class="nav-item">
-					<a class="nav-link" data-bs-toggle="collapse" href="#general-pages" role="button" aria-expanded="false" aria-controls="general-pages">
+					<a class="nav-link" data-bs-toggle="collapse" href="#security-settings" role="button" aria-expanded="false" aria-controls="general-pages">
 						<i class="link-icon" data-feather="book"></i>
 						<span class="link-title">安全设置</span>
 						<i class="link-arrow" data-feather="chevron-down"></i>
 					</a>
-					<div class="collapse" id="general-pages">
+					<div class="collapse" id="security-settings">
 						<ul class="nav sub-menu">
 							<li class="nav-item">
 								<a href="pages/general/blank-page.html" class="nav-link">修改密码</a>
