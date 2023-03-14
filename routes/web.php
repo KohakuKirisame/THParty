@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PartyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ParticipantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,10 @@ Route::domain('www.thparty.fun')->group(function (){
 	});
 });
 
+Route::domain('my.thparty.fun')->group(function (){
+
+});
+
 Route::domain('{domain}.thparty.fun')->group(function () {
     Route::get('/', [PartyController::class, 'partyHomepage']);
 });
@@ -40,11 +45,13 @@ Route::domain('{domain}.thparty.fun')->group(function () {
 	Route::get('/Register', function () {
 		return view('register');
 	});
-	Route::get('/Login',[UserController::class,"loginPage"]);
+	Route::get('/Login',[UserController::class,"loginPage"])->name('login');
 
 	Route::prefix("Actions")->group(function (){
 		Route::post("/SendSMSCaptcha",[UserController::class,'sendCaptcha']);
 		Route::post("/Register",[UserController::class,'register']);
 		Route::match(['get','post'],'/Logout',[UserController::class,'logout']);
 		Route::post('/Login',[UserController::class,'login']);
+		Route::get('/Join/{pid}',[ParticipantController::class,'joinParty'])->middleware('auth');
+		Route::get('/Quit/{pid}',[ParticipantController::class,'quitParty'])->middleware('auth');
 	});
