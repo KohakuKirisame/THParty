@@ -6,20 +6,19 @@
 	<title>change_profile</title>
 	<script type="application/javascript" src="{{asset("js/navCore.js")}}"></script>
 	<link rel="stylesheet" href="{{asset("css/navCore.css")}}}">
-	<link rel="stylesheet" href="{{asset("css/navStyle.css")}}}">
 	<script src="{{asset("js/user/change.js")}}"></script>
 	<link rel="stylesheet" href="https://unpkg.com/jcrop/dist/jcrop.css">
 	<script src="https://unpkg.com/jcrop"></script>
 </head>
 <body>
-<div class="container-fluid col-10">
+@include('components.navbar')
 	<div class="row justify-content-center">
 		<form action="/Actions/ChangeAvator" enctype="multipart/form-data" method="POST" id="form">
 			<div class="mb-3">
 				<label for="icon" class="col- col-form-label">头像</label>
-				<input class="form-control mb-1" type="file" id="icon" name="avatar">
+				<input class="form-control mb-1" type="file" id="icon" name="avatar" style="display:none">
 				<div class="col-6">
-					<img src="https://www.martingrocery.top/passageForHulenkius/0/0.png" id="cropper" class="mb-1" width="100%">
+					<img src="" id="cropper" class="mb-1" width="100%">
 				</div>
 			</div>
 			<button class="btn btn-outline-danger" id="abort">取消</button>
@@ -28,8 +27,8 @@
 		</form>
 		<button class="btn btn-outline-primary col-3" id="edit">修改</button>
 	</div>
-</div>
-
+@include('components.navfooter')
+@include('components.footer')
 </body>
 <script src="{{asset("js/changeAvatar.js")}}"></script>
 </html>
