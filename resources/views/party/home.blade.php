@@ -5,7 +5,7 @@
 	<title>{{$party->title}} - {{$party->subtitle}}</title>
 	<link rel="stylesheet" href="{{ asset('/css/party/home.css') }}"/>
 </head>
-<body>
+<body style="min-height: 960px">
 <div class="container my-5">
 	<div class="row">
 		<div class="px-2 col-12">
@@ -22,6 +22,12 @@
 							<p class="text-secondary mb-0"><small>{{$party->start}}至{{$party->end}}</small></p>
 							<p class="text-secondary"><small>{{$party->location}}</small></p>
 						</div>
+						<div class="w-100"></div>
+						@if(!auth()||!\App\Http\Controllers\ParticipantController::isParticipant($party->id,\Illuminate\Support\Facades\Auth::id()))
+							<a class="btn btn-outline-success" href="{{env('APP_URL').'/Actions/Join/'.$party->id}}">报名</a>
+						@else
+							<a class="btn btn-outline-danger" href="{{env('APP_URL').'/Actions/Quit/'.$party->id}}">您已报名</a>
+						@endif
 					</div>
 				</div>
 			</div>
@@ -136,6 +142,19 @@
 										</div>
 									</div>
 								</li>
+								@foreach($staffs as $staff)
+									<li class="list-group-item">
+										<div class="row">
+											<div class="col-3 col-lg-1 p-0">
+												<img class="rounded-circle img-fluid" src="{{\App\Http\Controllers\UserController::getAvatar($staff->uid)}}" />
+											</div>
+											<div class="col my-auto">
+												<h5>{{$staff->user->username}}
+												<p class="text-secondary mb-0">{{$staff->user->sign}}</p>
+											</div>
+										</div>
+									</li>
+								@endforeach
 
 							</ul>
 						</div>
@@ -157,10 +176,10 @@
 										<div id="showContent-{{$show->id}}" class="accordion-collapse collapse" aria-labelledby="showTitle-{{$show->id}}">
 											<div class="accordion-body">
 												<p class="text-secondary"><small>{{$show->start}}至{{$show->end}}</small></p>
-												<p>{{$show->introduction}}</p>
+												<p style="white-space: pre-line">{{$show->introduction}}</p>
 												<div class="row my-2">
 													@foreach($show->actor_info as $actor)
-														<div class="rounded-pill d-flex col-auto bg-primary px-0 m-2" style="height: 48px">
+														<div class="rounded-pill d-flex col-auto bg-secondary px-0 m-2" style="height: 48px">
 															<img class="rounded-circle" style="height: 48px;width: 48px;" src="{{\App\Http\Controllers\UserController::getAvatar($actor->id)}}" />
 															<p class="my-auto text-white px-2">{{$actor->username}}</p>
 														</div>
@@ -189,5 +208,6 @@
 			@endif
 		</div>
 </div>
+@include('components.footer')
 </body>
 </html>

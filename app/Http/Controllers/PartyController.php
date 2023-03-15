@@ -166,10 +166,12 @@ class PartyController extends BaseController {
 			return view('errors.404');
 		}
 		$shows=ShowController::getShows($party->id);
+		$staffs=StaffController::getStaff($party->id);
 		return view('party.home',[
 			'party' => $party,
 			'leader' => $leader,
 			'shows' => $shows,
+			'staffs'=>$staffs
 		]);
 	}
 }

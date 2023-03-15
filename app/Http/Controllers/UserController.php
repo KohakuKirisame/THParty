@@ -51,7 +51,7 @@ class UserController extends BaseController{
 				$user=User::where(['phone'=>$credentials['phone']])->first();
 				$user->last_ip=$request->ip();
 				$user->save();
-				return redirect("/");
+				return back();
 			}
 			//登录失败，返回上一页
 			return back()->withErrors([
@@ -133,7 +133,7 @@ class UserController extends BaseController{
 				$request->session()->forget('code');
 				$request->session()->forget('phone');
 				$request->session()->regenerate();
-				return redirect("/");
+				return back();
 			}
 			//注册失败，返回上一页
 			return back()->withErrors([

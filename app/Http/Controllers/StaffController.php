@@ -13,6 +13,18 @@ class StaffController extends BaseController {
 	/**
 	 * Staff控制器
 	 */
+
+	static public function getStaff($pid){
+		/**
+		 * 获取Staff
+		 * @param int $pid
+		 * 参数为pid
+		 * @return \Illuminate\Database\Eloquent\Collection
+		 * 返回一个集合
+		 */
+		$staffs=Staff::where('pid',intval($pid))->get();
+		return $staffs;
+	}
 	public function createStaff(Request $request) {
 		/**
 		 * 创建Staff

@@ -179,7 +179,7 @@
 				<form method="post" id="loginForm" action="/Actions/Login">
 					@csrf
 					<div class="mb-3">
-						<label for="username" class="form-label">用户名</label>
+						<label for="username" class="form-label">手机</label>
 						<input type="text" class="form-control" name="phone" id="phone" placeholder="手机号" />
 					</div>
 					<div class="mb-3">

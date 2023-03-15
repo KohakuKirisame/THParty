@@ -30,7 +30,7 @@ class Party extends Model {
 
 	public function getParticipantsAttribute(){
 		//与Participant模型建立一对多关系
-		return Participant::where('pid', $this->id)->count();
+		return Participant::where(['pid'=>$this->id,'is_active'=>1])->count();
 	}
 
 }
