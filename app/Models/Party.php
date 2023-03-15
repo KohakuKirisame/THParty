@@ -20,7 +20,8 @@ class Party extends Model {
 	];
 
 	protected $appends=[
-		'participants'
+		'participants',
+		'posts'
 	];
 
 	public function user(){
@@ -31,6 +32,11 @@ class Party extends Model {
 	public function getParticipantsAttribute(){
 		//与Participant模型建立一对多关系
 		return Participant::where(['pid'=>$this->id,'is_active'=>1])->count();
+	}
+
+	public function getPostsAttribute(){
+		//与Post模型建立一对多关系
+		return Post::where(['pid'=>$this->id,'is_active'=>1])->count();
 	}
 
 }

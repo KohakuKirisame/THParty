@@ -15,9 +15,10 @@ class PostController extends BaseController{
 			-> orderByDesc('created_at')
 			-> limit(2)
 			-> get();
+		return $posts;
 	}
 
-	static public function createPosts(Request $request){
+	public function createPosts(Request $request){
 		if(Auth::check()){ //验证是否登陸
 			$uid = Auth::id();
 			$credentials = $request->validate([
@@ -38,7 +39,7 @@ class PostController extends BaseController{
 		return redirect("/Login");
 	}
 
-	static public function deletePosts(Request $request,$post){
+	public function deletePosts(Request $request,$post){
 		$post=intval($post);
 		if(Post::find($post)->first()->uid==Auth::id()){
 			Post::where('id',$post) -> update(['is_active'=>0]);

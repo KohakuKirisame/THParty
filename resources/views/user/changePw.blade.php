@@ -3,6 +3,7 @@
 <head>
 	@include('components.header')
 	<title>修改密码 - THParty.Fun</title>
+	<script type="application/javascript" src="{{asset("js/changePw.js")}}"></script>
 </head>
 <body>
 <div class="container my-5" id="mainContainer">
@@ -25,19 +26,16 @@
 						<input type="password" class="form-control" name="password_confirm" id="password_confirm" placeholder="确认密码" />
 					</div>
 					<div class="input-group mb-3">
-						<span class="input-group-text" id="basic-addon1">+86</span>
-						<input type="text" class="form-control" name="phone" id="phone" placeholder="手机号码">
+						<span class="input-group-text" id="basic-addon1">您的手机号为:{{$user->phone}}</span>
 					</div>
 					<div class="input-group mb-3">
 						<input type="text" class="form-control" name="captcha" id="captcha" placeholder="手机验证码">
 						<button class="btn btn-outline-success" type="button" id="sendCaptcha" disabled="disabled">发送验证码</button>
 					</div>
-
 				</form>
 				<div class="row justify-content-around px-2 mt-4">
 					<button class="btn btn-outline-primary" id="submit">修改密码</button>
 				</div>
-
 				<div class="px-2 my-4">
 					@foreach($errors->all() as $error) <p class="text-center text-danger" id="warning">{{$error}}</p>@endforeach
 				</div>
@@ -46,6 +44,5 @@
 	</div>
 </div>
 @include('components.footer')
-<script type="application/javascript" src="{{asset("js/changePw.js")}}"></script>
 </body>
 </html>

@@ -30,7 +30,7 @@ Route::domain('www.thparty.fun')->group(function (){
 });
 
 Route::domain('my.thparty.fun')->group(function (){
-
+	Route::get('/Profile',[UserController::class,'changeProfilePage'])->middleware('auth');
 });
 
 Route::domain('{domain}.thparty.fun')->group(function () {

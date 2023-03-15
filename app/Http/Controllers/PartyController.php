@@ -167,11 +167,13 @@ class PartyController extends BaseController {
 		}
 		$shows=ShowController::getShows($party->id);
 		$staffs=StaffController::getStaff($party->id);
+		$posts=PostController::postPreview($party->id);
 		return view('party.home',[
 			'party' => $party,
 			'leader' => $leader,
 			'shows' => $shows,
-			'staffs'=>$staffs
+			'staffs'=>$staffs,
+			'posts'=>$posts
 		]);
 	}
 }

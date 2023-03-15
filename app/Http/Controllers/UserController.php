@@ -52,7 +52,13 @@ class UserController extends BaseController{
 				$user=User::where(['phone'=>$credentials['phone']])->first();
 				$user->last_ip=$request->ip();
 				$user->save();
-				return back();
+				if($request->session()->has('urlPrevious')){
+					$url=$request->session()->get('urlPrevious');
+					$request->session()->forget('urlPrevious');
+					return redirect($url);
+				}else{
+					return redirect('/');
+				}
 			}
 			//登录失败，返回上一页
 			return back()->withErrors([
@@ -435,5 +441,29 @@ class UserController extends BaseController{
 			'ACL' => 'public-read',
 		]);
 		return back();
+	}
+
+	public function changeProfilePage(Request $request){
+		/**
+		 * 修改个人资料页面
+		 * @param Request $request
+		 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+		 * 返回修改个人资料页面
+		 */
+		$uid=Auth::id();
+		$user=User::where(["id"=>$uid])->first();
+		return view("user.changeUserInfo",["user"=>$user]);
+	}
+
+	public function changeAvatarPage(Request $request){
+		/**
+		 * 修改头像页面
+		 * @param Request $request
+		 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+		 * 返回修改头像页面
+		 */
+		$uid=Auth::id();
+		$user=User::where(["id"=>$uid])->first();
+		return view("user.changeAvatar",["user"=>$user]);
 	}
 }

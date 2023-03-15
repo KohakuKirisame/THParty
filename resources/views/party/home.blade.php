@@ -4,6 +4,7 @@
 	@include('components.header')
 	<title>{{$party->title}} - {{$party->subtitle}}</title>
 	<link rel="stylesheet" href="{{ asset('/css/party/home.css') }}"/>
+	<script src="{{asset('js/layer.js')}}"></script>
 </head>
 <body style="min-height: 960px">
 <div class="container my-5">
@@ -113,7 +114,7 @@
 						<div class="card shadow-lg kirisame-bg">
 							<div class="card-body">
 								<h5 class="card-title">动态</h5>
-								<p class="display-5 text-center ps-2">1919</p>
+								<p class="display-5 text-center ps-2">{{$party->posts}}</p>
 							</div>
 						</div>
 					</div>
@@ -149,7 +150,7 @@
 												<img class="rounded-circle img-fluid" src="{{\App\Http\Controllers\UserController::getAvatar($staff->uid)}}" />
 											</div>
 											<div class="col my-auto">
-												<h5>{{$staff->user->username}}
+												<h5>{{$staff->user->username}}</h5>
 												<p class="text-secondary mb-0">{{$staff->user->sign}}</p>
 											</div>
 										</div>
@@ -203,11 +204,44 @@
 				</div>
 			@endif
 			@if($party->type>=1)
-				<div class="tab-pane fade" id="pills-post" role="tabpanel" aria-labelledby="post-tab" tabindex="0">5
+				<div class="tab-pane fade" id="pills-post" role="tabpanel" aria-labelledby="post-tab" tabindex="0">
+					<div class="row my-3 p-2">
+						@foreach($posts as $post)
+						<div class="col-12 my-2 shadow-lg card kirisame-bg">
+							<div class="card-body">
+								<div class="row">
+										<img class="col-1 p-0 rounded-circle img-fluid" src="{{\App\Http\Controllers\UserController::getAvatar($post->uid)}}" style="width: 64px;height: 64px" />
+									<div class="col my-auto">
+										<h5>{{$post->user->username}}</h5>
+										<p class="text-secondary">{{$post->user->sign}}</p>
+									</div>
+								</div>
+								<hr class="mt-1 mb-4" />
+								<p class="card-text" style="white-space: pre-line">{{$post->content}}</p>
+								@if($post->img!=null)
+									@php
+										$images=json_decode($post->img);
+									@endphp
+									<div class="row">
+										@foreach($images as $image)
+											<img class="col-6 col-md-4 col-lg-3 imgView p-1 rounded" src="{{$image}}" style="object-fit: cover;aspect-ratio: 1/1" />
+										@endforeach
+									</div>
+									@endif
+							</div>
+
+						</div>
+						@endforeach
+					</div>
 				</div>
 			@endif
 		</div>
 </div>
 @include('components.footer')
+<script>
+	$("body").on("click", ".imgView", function (e) {
+		layer.photos({photos: {"data": [{"src": e.target.src}]}});
+	});
+</script>
 </body>
 </html>
