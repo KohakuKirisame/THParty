@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
 use Qcloud\Cos\Client;
 use TencentCloud\Sms\V20210111\SmsClient;
 use TencentCloud\Sms\V20210111\Models\SendSmsRequest;
@@ -396,5 +397,43 @@ class UserController extends BaseController{
 			}
 		}
 		return false;
+	}
+
+	public function changeAvatar(Request $request){
+		/**
+		 * 修改头像
+		 * @param Request $request
+		 * @return \Illuminate\Http\RedirectResponse
+		 * 返回重定向
+		 */
+		$uid=Auth::id();
+		if(!$request->hasFile('avatar')){
+			return back()->withErrors([
+				//错误信息
+				'avatar' => '请选择头像',
+			])->withInput();
+		}
+		$img=Image::make($request->file('avatar'));
+		$x=intval($request->input("x"));
+		$y=intval($request->input("y"));
+		$w=intval($request->input("w"));
+		$h=intval($request->input("h"));
+		$img->crop($w,$h,$x,$y);
+		$imgContent=$img->encode("png");
+		$cosClient= new Client([
+			'region' => env("TC_COS_REGION"),
+			'schema' => 'https',
+			'credentials' => [
+				'secretId' => env("TC_SECRET_ID"),
+				'secretKey' => env("TC_SECRET_KEY"),
+			],
+		]);
+		$cosClient->putObject([
+			'Bucket' => env("TC_COS_BUCKET"),
+			'Key' => "/avatar/".$uid.".png",
+			'Body' => file_get_contents($imgContent),
+			'ACL' => 'public-read',
+		]);
+		return back();
 	}
 }
