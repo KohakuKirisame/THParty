@@ -26,23 +26,27 @@ $(document).ready(
 				$("#cropper").attr("src", reader.result);
 				$(".jcrop-image-stage").css({"z-index":999});
 				crop();
-			}
-
-
-
+			};
 		});
 		$("#submit_avatar").on("click",function(){
 			var formData = new FormData($("form")[0]);
+			var _token = $("#avatarForm input[name='_token']").val();
 			// console.log(test);
 			// formData.append("123","123");
-			e=stage.active.pos;
+			// e=stage.active.pos;
 			formData.append("avatar",$("#icon")[0].files[0]);
-			for (i in ['x','y','w','h']){
-				formData.append(i,e[i]);
-			}
-			console.log(formData.find("x"));
+			formData.append("x",$(".jcrop-widget").css("left").slice(0,-2));
+			formData.append("y",$(".jcrop-widget").css("top").slice(0,-2));
+			formData.append("w",$(".jcrop-widget").css("width").slice(0,-2));
+			formData.append("h",$(".jcrop-widget").css("height").slice(0,-2));
+			// for (i in ['x','y','w','h']){
+			// 	formData.append(i,e[i]);
+			// }
+			// console.log(formData.get("x"));
+
 			$.ajax({
 				// url:,
+				_token:_token,
 				data:formData,
 				type:'POST',
 				processData: false,
@@ -51,7 +55,6 @@ $(document).ready(
 					if (res.code==200){
 						//alert("修改成功");
 						console.log("修改成功");
-
 					}
 				}
 			});
