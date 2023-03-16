@@ -47,14 +47,14 @@
 						<li class="mb-1 nav-category">
 							用户信息
 						</li>
-						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark">
+						<li class="mb-1 nav-item rounded"><a href="/Profile" class="link-dark">
 								个人资料</a></li>
 						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark">
 								安全设置</a></li>
-						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark">退出登录</a></li>
+						<li class="mb-1 nav-item rounded"><a href="/Actions/Logout" class="link-dark">退出登录</a></li>
 
 					</ul>
-					
+
 
 				</div>
 			</div>

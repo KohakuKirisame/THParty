@@ -6,7 +6,6 @@
 </head>
 <body>
 
-@include('components.navbar')
 	<div class="row justify-content-center my-lg-5 my-xl-5">
 		<div class="card shadow-lg col-12 col-md-9 col-lg-6 opacity-75">
 			<div class="card-body">
@@ -43,7 +42,6 @@
 			</div>
 		</div>
 	</div>
-@include('components.navfooter')
 @include('components.footer')
 </body>
 </html>

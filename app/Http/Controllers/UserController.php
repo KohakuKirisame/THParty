@@ -197,7 +197,6 @@ class UserController extends BaseController{
 		 * @return \Illuminate\Routing\Redirector
 		 * 返回重定向
 		 */
-		if (Auth::check()) {
 			$uid = Auth::id();
 			$credentials = $request->validate([
 				'username' => ['required', 'max:255'],
@@ -222,8 +221,6 @@ class UserController extends BaseController{
 			$u->sign = $credentials['sign'];
 			$u->save();
 			return back()->with('message','修改成功喵！');
-		}
-		return back()->with('message','操作被摩多罗神必吞掉了，，，');
 	}
 	public function changePassword(Request $request) {
 		/**
@@ -420,11 +417,13 @@ class UserController extends BaseController{
 			])->withInput();
 		}
 		$img=Image::make($request->file('avatar'));
-		$x=intval($request->input("x"));
-		$y=intval($request->input("y"));
-		$w=intval($request->input("w"));
-		$h=intval($request->input("h"));
+		$scale=$img->width()/$request->input("width");
+		$x=intval(intval($request->input("x"))*$scale);
+		$y=intval(intval($request->input("y"))*$scale);
+		$w=intval(intval($request->input("w"))*$scale);
+		$h=intval(intval($request->input("h"))*$scale);
 		$img->crop($w,$h,$x,$y);
+		$img->resize(512,512);
 		$imgContent=$img->encode("png");
 		$cosClient= new Client([
 			'region' => env("TC_COS_REGION"),
@@ -434,13 +433,16 @@ class UserController extends BaseController{
 				'secretKey' => env("TC_SECRET_KEY"),
 			],
 		]);
-		$cosClient->putObject([
-			'Bucket' => env("TC_COS_BUCKET"),
-			'Key' => "/avatar/".$uid.".png",
-			'Body' => file_get_contents($imgContent),
-			'ACL' => 'public-read',
-		]);
-		return back();
+		try{
+			$cosClient->upload(
+				bucket: env("TC_COS_BUCKET"),
+				key: "/avatar/".$uid.".png",
+				body: $imgContent,
+			);
+		}catch (\Exception $e){
+			return $e;
+		}
+		return 0;
 	}
 
 	public function changeProfilePage(Request $request){

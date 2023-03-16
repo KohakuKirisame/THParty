@@ -30,6 +30,9 @@ Route::domain('www.thparty.fun')->group(function (){
 });
 
 Route::domain('my.thparty.fun')->group(function (){
+	Route::get('/',function (){
+		return redirect('/Profile');
+	});
 	Route::get('/Profile',[UserController::class,'changeProfilePage'])->middleware('auth');
 });
 
@@ -39,7 +42,7 @@ Route::domain('{domain}.thparty.fun')->group(function () {
 
 //本站路由
 	Route::get('/', function () {
-        return view('home');
+        return view('beian');
     });
     Route::get('/About', [HomeController::class, 'aboutPage']);
 	Route::get('/Register', function () {
@@ -54,4 +57,6 @@ Route::domain('{domain}.thparty.fun')->group(function () {
 		Route::post('/Login',[UserController::class,'login']);
 		Route::get('/Join/{pid}',[ParticipantController::class,'joinParty'])->middleware('auth');
 		Route::get('/Quit/{pid}',[ParticipantController::class,'quitParty'])->middleware('auth');
+		Route::post('/ChangeAvatar',[UserController::class,'changeAvatar'])->middleware('auth');
+		Route::post('/ChangeUserInfo',[UserController::class,'changeUserInfo'])->middleware('auth');
 	});

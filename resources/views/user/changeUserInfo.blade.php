@@ -5,12 +5,12 @@
 	<title>change_profile</title>
 	<link rel="stylesheet" href="https://unpkg.com/jcrop/dist/jcrop.css">
 	<script src="https://unpkg.com/jcrop"></script>
-	<script src="{{asset("js/changeAvatar.js")}}"></script>
+	<script src="{{asset("js/user/changeAvatar.js")}}"></script>
 </head>
 <body>
 @include('components.navbar')
-<div class="row col-12">
-	<div class="card col-lg-9">
+<div class="row px-2 justify-content-center">
+	<div class="card col-lg-9 my-5">
 		<div class="card-body">
 			<a data-bs-toggle="modal" data-bs-target="#changeAvatar">
 				<img src="{{\app\Http\Controllers\UserController::getAvatar()}}" class="m-2 rounded-circle" height="96px" />
@@ -18,7 +18,7 @@
 			<h4 class="d-inline">{{$user->username}}</h4>
 		</div>
 		<div class="card-body">
-			<form method="POST" action="{{env('APP_URL').'Actions/ChangeUserInfo'}}" id="infoForm">
+			<form method="POST" action="/Actions/ChangeUserInfo" id="infoForm">
 				@csrf
 				<div class="mb-3 row">
 					<label for="username" class="col-sm-3 col-lg-2 col-form-label">昵称</label>
@@ -29,7 +29,7 @@
 				<div class="mb-3 row">
 					<label for="qq" class="col-sm-3 col-lg-2 col-form-label">邮箱</label>
 					<div class="col-sm-9 col-lg-10">
-						<input type="email" class="form-control" id="email" name="username" value="1{{$user->email}}">
+						<input type="email" class="form-control" id="email" name="email" value="{{$user->email}}">
 					</div>
 				</div>
 				<div class="mb-3 row">
@@ -68,10 +68,10 @@
 						<form method="post" enctype="multipart/form-data" id="avatarForm">
 							@csrf
 							<label for="ava" class="form-label">上传新头像</label>
-							<input class="form-control form-control-lg" id="icon" type="file" name="ava" accept="image/png,image/jpeg,image/gif">
+							<input class="form-control form-control-lg" id="icon" type="file" name="avatar" accept="image/png,image/jpeg,image/gif">
 						</form>
 					</div>
-					<div class="" style="z-index:999;">
+					<div id="imgContainer" style="z-index:999;">
 						<img src="" id="cropper" class="mb-1" width="100%">
 					</div>
 				</div>
