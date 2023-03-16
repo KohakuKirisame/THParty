@@ -9,14 +9,11 @@ $(document).ready(
 			});
 			const rect = Jcrop.Rect.create(0,0,100,100);
 			const options = {};
-			// stage.newWidget();
+			stage.newWidget(rect,options);
 			stage.activate();
 			//stage.active.pos;
 		}
 
-		$('#edit').click(function(){
-			$("#icon").show();
-		});
 		$("#icon").change(function () {
 			var file = $("#icon").get(0).files[0];
 			if(file === undefined)return;
@@ -24,12 +21,13 @@ $(document).ready(
 			reader.readAsDataURL(file);
 			reader.onloadend = function () {
 				$("#cropper").attr("src", reader.result);
-				$(".jcrop-image-stage").css({"z-index":999});
 				crop();
+
+				$(".jcrop-image-stage").css({"z-index":999});
 			};
 		});
 		$("#submit_avatar").on("click",function(){
-			var formData = new FormData($("form")[0]);
+			var formData = new FormData($("#avatarForm")[0]);
 			var _token = $("#avatarForm input[name='_token']").val();
 			// console.log(test);
 			// formData.append("123","123");
