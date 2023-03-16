@@ -1,17 +1,19 @@
 $(document).ready(
 	function () {
+		// $("#icon").hide();
 		var e={};
+		// const stage;
 		function crop() {
-			//使用Jcrop显示裁剪框，并返回位置
 			const stage = Jcrop.attach('cropper',{
 				aspectRatio: 1
 			});
-			const rect = Jcrop.Rect.create(0,0,200,200);
+			const rect = Jcrop.Rect.create(0,0,100,100);
 			const options = {};
-			stage.newWidget(rect,options);
+			// stage.newWidget();
 			stage.activate();
-			return stage.active.pos;
+			//stage.active.pos;
 		}
+
 		$('#edit').click(function(){
 			$("#icon").show();
 		});
@@ -22,20 +24,26 @@ $(document).ready(
 			reader.readAsDataURL(file);
 			reader.onloadend = function () {
 				$("#cropper").attr("src", reader.result);
+				$(".jcrop-image-stage").css({"z-index":999});
+				crop();
 			}
-			e=crop();
+
+
+
 		});
-		$("#submit").on("click",function(){
+		$("#submit_avatar").on("click",function(){
 			var formData = new FormData($("form")[0]);
 			// console.log(test);
-			formData.append("123","123");
+			// formData.append("123","123");
+			e=stage.active.pos;
 			formData.append("avatar",$("#icon")[0].files[0]);
 			for (i in ['x','y','w','h']){
 				formData.append(i,e[i]);
 			}
+			console.log(formData.find("x"));
 			$.ajax({
 				// url:,
-				data:formData,//formData包括 File,x,y,w,h;
+				data:formData,
 				type:'POST',
 				processData: false,
 				contentType: false,

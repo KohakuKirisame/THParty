@@ -30,5 +30,5 @@
 @include('components.navfooter')
 @include('components.footer')
 </body>
-<script src="{{asset("js/changeAvatar.js")}}"></script>
+
 </html>
