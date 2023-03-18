@@ -25,7 +25,11 @@
 				<h1 class="m-auto mb-2 col-12 text-center">醉眠幻想聚宴间</h1>
 				<div class="m-auto text-center col-12">
 					<a class="btn btn-lg btn-outline-success mx-2" href="/About">关于本站</a>
-					@if(!\Illuminate\Support\Facades\Auth::check())<a class="btn btn-lg btn-outline-primary mx-2" href="/Login" >登录</a> @endif
+					@if(!\Illuminate\Support\Facades\Auth::check())
+						<a class="btn btn-lg btn-outline-primary mx-2" href="/Login" >登录</a>
+					@else
+						<a class="btn btn-lg btn-outline-primary mx-2" href="https://my.thparty.fun" >我的</a>
+					@endif
 				</div>
 			</div>
 			<div class="col-12 col-lg-4 text-center">
