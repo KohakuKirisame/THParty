@@ -3,10 +3,11 @@
 <head>
 	@include('components.header')
 	<title>修改密码 - THParty.Fun</title>
-	<script type="application/javascript" src="{{asset("js/changePw.js")}}"></script>
+	<script type="application/javascript" src="{{asset("js/user/changePw.js")}}"></script>
 </head>
 <body>
-<div class="container my-5" id="mainContainer">
+@include('components.navbar')
+<div class="row px-2 justify-content-center">
 	<div class="row justify-content-center">
 		<div class="card shadow-lg col-12 col-md-9 col-lg-6 opacity-75">
 			<div class="card-body">
@@ -43,6 +44,7 @@
 		</div>
 	</div>
 </div>
+@include('components.navfooter')
 @include('components.footer')
 </body>
 </html>

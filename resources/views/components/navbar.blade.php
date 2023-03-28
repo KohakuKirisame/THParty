@@ -22,11 +22,11 @@
 						<li class="mb-1 nav-category">
 							聚会
 						</li>
-						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark">
+						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark" id="navPartyOfMine">
 								我主办的聚会</a></li>
-						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark">
+						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark" id="navPartyAsStaff">
 								我作为Staff的聚会</a></li>
-						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark">
+						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark" id="navPartyJoin">
 								我参加的聚会</a></li>
 
 						<li class="border-top my-3"></li>
@@ -47,9 +47,9 @@
 						<li class="mb-1 nav-category">
 							用户信息
 						</li>
-						<li class="mb-1 nav-item rounded"><a href="/Profile" class="link-dark">
+						<li class="mb-1 nav-item rounded"><a href="/Profile" class="link-dark" id="navProfile">
 								个人资料</a></li>
-						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark">
+						<li class="mb-1 nav-item rounded"><a href="#" class="link-dark" id="navSecurity">
 								安全设置</a></li>
 						<li class="mb-1 nav-item rounded"><a href="/Actions/Logout" class="link-dark">退出登录</a></li>
 

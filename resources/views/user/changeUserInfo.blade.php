@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	@include('components.header')
-	<title>change_profile</title>
+	<title>账号信息 - THParty.Fun</title>
 	<link rel="stylesheet" href="https://unpkg.com/jcrop/dist/jcrop.css">
 	<script src="https://unpkg.com/jcrop"></script>
 	<script src="{{asset("js/user/changeAvatar.js")}}"></script>

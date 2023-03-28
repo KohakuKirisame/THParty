@@ -1,8 +1,6 @@
 $(document).ready(
 	function () {
-		// $("#icon").hide();
-		var e={};
-		// const stage;
+		$("#navProfile").css("font-weight","bold");
 		function crop() {
 			const stage = Jcrop.attach('cropper',{
 				aspectRatio: 1
@@ -12,7 +10,6 @@ $(document).ready(
 			stage.newWidget(rect,options);
 			stage.activate();
 			$(".jcrop-image-stage").css({"z-index":999});
-			//stage.active.pos;
 		}
 		function remove(){
 			if($(".jcrop-widget").length!=0){
@@ -41,7 +38,6 @@ $(document).ready(
 			var formData = new FormData($("#avatarForm")[0]);
 			var _token = $("#avatarForm input[name='_token']").val();
 			var width = $("#cropper").width();
-			// console.log(width);
 			formData.append("x",$(".jcrop-widget").css("left").slice(0,-2));
 			formData.append("y",$(".jcrop-widget").css("top").slice(0,-2));
 			formData.append("w",$(".jcrop-widget").css("width").slice(0,-2));

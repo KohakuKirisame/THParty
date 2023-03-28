@@ -58,3 +58,7 @@ $("#submit").on("click", function(){
 		newPassword: new_pw
 	});
 });
+
+$(document).ready(function(){
+	$("#navSecurity").css("font-weight","bold");
+});
