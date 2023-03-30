@@ -11,35 +11,40 @@
 @include('components.navbar')
 <div class="row px-2 justify-content-center">
 	<div class="col-lg-9 my-5">
-		<div id="party-list">
-			<table id="partyTable">
+		<div class="row">
+			<div class="card col-12">
+				<div class="card-body">
+					<h5 class="card-title">我主办的聚会</h5>
+					<ul class="list-group list-group-flush" id="partyList">
+						@foreach($parties as $party)
+							<button class="btn" data-bs-toggle="collapse" data-bs-target="#partyContent-{{$party->id}}">
+								<li class="list-group-item">
+									<div class="row">
+										<div class="col-3 col-lg-1 p-0">
+											<img src="https://storage.thparty.fun/party/avatar/{{$party->id}}.png"
+												 class="img-fluid" alt="{{$party->title}}">
+										</div>
+										<div class="col my-auto">
+											<h5>{{$party->title}} - {{$party->subtitle}}</h5>
+											<p class="text-secondary mb-0">{{$party->information}}</p>
+										</div>
+									</div>
+								</li>
+							</button>
+							<div class="collapse" id="partyContent-{{$party->id}}" data-bs-parent="#partyList">
+								<div class="row">
+									<p><small>时间:{{$party->start}} - {{$party->end}}</small></p>
+									<p>地点:{{$party->location}}</p>
+									<p>详细信息:{{$party->information}}</p>
+									<p>审核状态:@if($party->activated==-1)未通过 @elseif($party->activated==0)正在审核中 @else 已通过@endif</p>
+									<span><a href="{{$party->domain}}">前往聚会页面>></a></span>
+								</div>
+							</div>
+						@endforeach
 
-			</table>
-			{{--@foreach($parties as $party)
-				@if()
-
-				@endif
-			@endforeach  用于显示多个活动--}}
-			<!--<div class="card party-item">
-				<div class="card-header">
-					<h2 class="mb-0">
-						<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#party1-detail" aria-expanded="true" aria-controls="activity1-details">
-							<img src="https://storage.thparty.fun/party/avatar/{{}}.png" class="party-icon">
-							Activity 1 Name
-						</button>
-					</h2>
-					<div class="party-info">
-						<p>时间: 10:00 AM - 12:00 PM</p>
-						<p>主办者: {{}}</p>
-					</div>
+					</ul>
 				</div>
-				<div id="party1-detail" class="collapse" data-bs-parent="#party-list">
-					<div class="card-body">
-						<p>没有更多了</p>
-					</div>
-				</div>
-			</div>-->
-
+			</div>
 		</div>
 	</div>
 </div>

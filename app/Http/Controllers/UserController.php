@@ -458,17 +458,6 @@ class UserController extends BaseController{
 		return view("user.changeUserInfo",["user"=>$user]);
 	}
 
-	public function changeAvatarPage(Request $request){
-		/**
-		 * 修改头像页面
-		 * @param Request $request
-		 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-		 * 返回修改头像页面
-		 */
-		$uid=Auth::id();
-		$user=User::where(["id"=>$uid])->first();
-		return view("user.changeAvatar",["user"=>$user]);
-	}
 
 	public function getPartyforuid(Request $request){
 		/**
@@ -511,6 +500,6 @@ class UserController extends BaseController{
 				}
 			}
 			//没登录的回去登录
-			return redirect("/Login");
-		}
+		return redirect("/Login");
+	}
 }
