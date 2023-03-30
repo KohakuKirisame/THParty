@@ -459,47 +459,35 @@ class UserController extends BaseController{
 	}
 
 
-	public function getPartyforuid(Request $request){
+	public function getPartyforuid(int $uid, int $type){
 		/**
 		 * 给定uid和聚会类型，返回所有聚会（按时间顺序排列）
-		 * @param Request $request
+		 * @param int $uid
+		 * @param int $type
 		 * 参数为请求，包含uid和type（0:leader,1:staff,2:participant）
 		 * @return \Illuminate\Database\Eloquent\Collection|static[]
 		 * 返回值为一个集合
 		 */
-		if(Auth::check()){ //验证登录
-				$credentials = $request->validate([
-					'uid' => ['required'],
-					'type' => ['required', 'numeric', 'min:0', 'max:2'],
-				],[
-					'uid.required'=>'uid不能为空！',
-					'type.required' => '聚会类型不能为空',
-					'type.numeric' => '⑨!聚会类型只有0(leader),1(staff),2(participant)哦',
-					'type.min' => '⑨!聚会类型只有0(leader),1(staff),2(participant)哦',
-					'type.max' => '⑨!聚会类型只有0(leader),1(staff),2(participant)哦',
-				]);
-				//信息合理性验证通过，开始鉴权，先根据uid和type找到聚会信息表
-			    switch ($credentials['type']){
+
+			    switch ($type){
 					case 0://leader
-						$parties = Party::where('leader', '=',$credentials['uid'])
+						$parties = Party::where('leader', '=',$uid)
 							->orderBy('start', 'desc')
 							->get();
 						return $parties;
 					case 1:
 						$parties = Party::addSelect(['pid' =>
-								Staff::select('pid')->whereColumn('uid', $credentials['uid'])
+								Staff::select('pid')->whereColumn('uid', $uid)
 							  ])->orderByDesc('start')
 								->get();
 						return $parties;
 					case 2:
 						$parties = Party::addSelect(['pid' =>
-							Participant::select('pid')->whereColumn('uid', $credentials['uid'])->whereColumn('is_active', 1)
+							Participant::select('pid')->whereColumn('uid', $uid)->whereColumn('is_active', 1)
 						])->orderByDesc('start')
 							->get();
 						return $parties;
 				}
-			}
-			//没登录的回去登录
-		return redirect("/Login");
+
 	}
 }
