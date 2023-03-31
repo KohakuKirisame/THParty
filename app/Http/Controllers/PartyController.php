@@ -176,5 +176,23 @@ class PartyController extends BaseController {
 			'posts'=>$posts
 		]);
 	}
+
+	public function partyPostspage(Request $request,string $domain){
+		/**
+		 * 活动主页
+		 * @param Request $request
+		 * @param string $domain
+		 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+		 */
+		$party = Party::where('domain',$domain)->first();
+		if($party == null){
+			return view('errors.404');
+		}
+		$posts=PostController::getPosts($party->id);
+		return view('party.posts',[
+			'party' => $party,
+			'posts'=>$posts
+		]);
+	}
 }
 

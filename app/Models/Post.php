@@ -18,4 +18,12 @@ class Post extends Model{
 		return $this->belongsTo(User::class,'uid','id');
 	}
 
+	public function party(){
+		return $this->belongsTo(Party::class,'pid','id');
+	}
+
+	public function comments(){
+		return $this->hasMany(Comment::class,'post','id');
+	}
+
 }

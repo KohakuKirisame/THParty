@@ -38,6 +38,7 @@ Route::domain('my.thparty.fun')->group(function (){
 
 Route::domain('{domain}.thparty.fun')->group(function () {
     Route::get('/', [PartyController::class, 'partyHomepage']);
+	Route::get('/Posts',[PartyController::class,'partyPostspage']);
 });
 
 //本站路由

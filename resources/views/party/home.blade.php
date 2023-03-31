@@ -232,6 +232,7 @@
 
 						</div>
 						@endforeach
+						<a class=" my-3 btn btn-lg btn-outline-primary" href="/Posts">更多</a>
 					</div>
 				</div>
 			@endif
