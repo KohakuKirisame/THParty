@@ -92,6 +92,7 @@ $(document).ready(function(){
 			$("#timerBegin").removeClass("btn-danger");
 			$("#timerBegin").addClass("btn-success");
 			timerReset();
+
 		}
 	});
 	// $("#timerReset").on("click",function(){
@@ -121,6 +122,7 @@ $(document).ready(function(){
 	}
 	function timerReset(){
 		clearInterval(countDown);
+		isCounting = 0;
 		$("#timerShow").css("color","black");
 		$("#timerShow").html(timeCount);
 	}
