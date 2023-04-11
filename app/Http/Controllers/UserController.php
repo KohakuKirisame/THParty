@@ -201,14 +201,13 @@ class UserController extends BaseController{
 			$uid = Auth::id();
 			$credentials = $request->validate([
 				'username' => ['required', 'max:255'],
-				'email' => ['required', 'email', 'max:255'],
+				'email' => ['email', 'max:255'],
 				'qq' => ['numeric','integer','min:100000','max:9999999999999'],
 				'introduction' => [],
 				'sign' => ['max:255']
 			],[
 				'username.required' => '你是？',
 				'username.max' => '你是兔子？',
-				'email.required' => '幻想乡也有邮箱啦',
 				'email.max' => '就没有短一点的邮箱吗',
 				'qq.numeric' => '你这QQ丁真吗',
 				'qq.max' => '你这QQ丁真吗',

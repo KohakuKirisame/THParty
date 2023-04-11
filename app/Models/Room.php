@@ -9,12 +9,17 @@ class Room extends Model{
 	protected $fillable=[
 		'game',
 		'party',
+		'config',
 		'is_started',
 		'is_active',
 	];
 
-	public function game(){
-		return $this->belongsTo('App\Models\Game', 'game', 'id');
+	protected $appends=['game_info'];
+
+
+
+	public function getGameInfoAttribute(){
+		return Game::where('id',$this->game)->first();
 	}
 
 	public function party(){

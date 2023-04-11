@@ -197,7 +197,54 @@
 				</div>
 			</div>
 			<div class="tab-pane fade" id="pills-activity" role="tabpanel" aria-labelledby="activity-tab" tabindex="0">
-				3
+				<div class="row my-3 p-2">
+					<div class="card col-12 shadow-lg kirisame-bg">
+						<div class="card-body">
+							<h5 class="card-title">互动游戏</h5>
+							<div class="accordion my-3" id="showList">
+								@foreach($rooms as $room)
+									@if($room->is_active==1)
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="showTitle-{{$room->id}}">
+												<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#showContent-{{$room->id}}" aria-expanded="false" aria-controls="showContent-{{$room->id}}">{{$room->game_info->name}}</button>
+											</h2>
+											<div id="showContent-{{$room->id}}" class="accordion-collapse collapse" aria-labelledby="showTitle-{{$room->id}}">
+												<div class="accordion-body">
+													<p style="white-space: pre-line">{{$room->game_info->rule}}</p>
+													<div class="row my-2 justify-content-center">
+														@auth
+															@if(\App\Http\Controllers\UserController::checkPrivilege(\Illuminate\Support\Facades\Auth::id(),2,$party->id))
+																@if($room->is_started==0)
+																<a class="col m-2 btn btn-outline-success">开始游戏</a>
+																@else
+																	<a class="col m-2 btn btn-outline-success">开始游戏</a>
+																	<a class="col m-2 btn btn-outline-danger">结束游戏</a>
+																@endif
+															@else
+																@if($room->is_started==0)
+																	<p class="col m-2 text-secondary">游戏未开始</p>
+																@else
+																	@if($room->game_info->is_public==1)
+																		<a class="col m-2 btn btn-outline-success">进入游戏</a>
+																	@else
+																		<p class="col m-2 text-secondary">该游戏由主持人操作</p>
+																	@endif
+																@endif
+															@endif
+														@endauth
+														@guest
+															<a class="col m-2 btn btn-outline-warning" href="https://thparty.fun/Login">请先登录</a>
+														@endguest
+													</div>
+												</div>
+											</div>
+										</div>
+									@endif
+								@endforeach
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			@if($party->type==2)
 				<div class="tab-pane fade" id="pills-group" role="tabpanel" aria-labelledby="group-tab" tabindex="0">4

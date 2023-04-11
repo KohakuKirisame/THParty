@@ -6,6 +6,8 @@ use App\Http\Controllers\PartyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ParticipantController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\Games\AnnoyingUfoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,17 +41,21 @@ Route::domain('my.thparty.fun')->group(function (){
 Route::domain('{domain}.thparty.fun')->group(function () {
     Route::get('/', [PartyController::class, 'partyHomepage']);
 	Route::get('/Posts',[PartyController::class,'partyPostspage']);
+	Route::get('/Game/{rid}',[RoomController::class,'switchGames'])->middleware('auth');
 });
 
 //本站路由
+Route::domain('thparty.fun')->group(function (){
 	Route::get('/', function () {
-        return view('beian');
-    });
-    Route::get('/About', [HomeController::class, 'aboutPage']);
+		return view('home');
+	});
+	Route::get('/About', [HomeController::class, 'aboutPage']);
 	Route::get('/Register', function () {
 		return view('register');
 	});
 	Route::get('/Login',[UserController::class,"loginPage"])->name('login');
+});
+
 
 	Route::prefix("Actions")->group(function (){
 		Route::post("/SendSMSCaptcha",[UserController::class,'sendCaptcha']);
@@ -60,4 +66,7 @@ Route::domain('{domain}.thparty.fun')->group(function () {
 		Route::get('/Quit/{pid}',[ParticipantController::class,'quitParty'])->middleware('auth');
 		Route::post('/ChangeAvatar',[UserController::class,'changeAvatar'])->middleware('auth');
 		Route::post('/ChangeUserInfo',[UserController::class,'changeUserInfo'])->middleware('auth');
+		Route::prefix("/Game")->group(function (){
+			Route::post('/AnnoyingUfo',[AnnoyingUfoController::class,'showWord'])->middleware('auth');
+		});
 	});

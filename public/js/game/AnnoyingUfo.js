@@ -81,12 +81,23 @@ $(document).ready(function(){
 		}
 	});
 	$("#timerBegin").on("click",function(){
+
 		if(isCounting==0) {
 			isCounting = 1;
 			timerBegin(timeCount, 5);
 			$("#timerBegin").html("<i class=\"bi bi-arrow-clockwise\"></i>");
 			$("#timerBegin").removeClass("btn-success");
 			$("#timerBegin").addClass("btn-danger");
+			var _token = $("meta[name='csrf-token']").attr("content");
+			var room=$("meta[name='room']").attr("content");
+			$.post("/Actions/Game/AnnoyingUfo",{
+					_token: _token,
+					room: room,
+				},
+				function(data,status){
+					$("#linesText").html(data);
+				}
+			);
 		}else{
 			$("#timerBegin").html("<i class=\"bi bi-play\"></i>");
 			$("#timerBegin").removeClass("btn-danger");
