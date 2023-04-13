@@ -48,7 +48,11 @@ $(document).ready(function(){
 
 		// $("#score" + tid.toString()).html(parseInt($("#score" + tid.toString()).html()) + 1);
 	});
-
+	$("#groupReset").on("click",function (){
+		for(let i=1;i<=groupNum;i++){
+			$("div[id=groupItem"+i+"]").fadeOut();
+		}
+	});
 	$("#addGroup").click(function(){
 		groupNum++;
 		let tid = groupNum.toString();

@@ -42,7 +42,7 @@
 		<div class="col-sm-12 col-lg-6 my-sm-3">
 			<div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white">
 				<a href="#" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
-					<span class="fs-5 fw-semibold">队伍</span>
+					<span class="fs-5 fw-semibold">队伍 &nbsp</span><button id="groupReset" class="btn"><i class="bi-arrow-clockwise"></i></button>
 				</a>
 				<div class="list-group list-group-flush border-bottom scrollarea" id="groupList">
 					<div class="list-group-item row py-3 lh-tight" id="groupItem1" score="0">
