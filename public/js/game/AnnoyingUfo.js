@@ -1,6 +1,6 @@
 $(document).ready(function(){
-	var xGreySrc = "./assets/img/tmpXGrey.png";
-	var xRedSrc = "./assets/img/tmpXLight.png";
+	var xGreySrc = "/img/tmpXGrey.png";
+	var xRedSrc = "/img/tmpXLight.png";
 	var groupNum = 1;
 	$("#deleteGroup1").hide();
 	$("#groupList").on("click",".deleteGroup",function (){

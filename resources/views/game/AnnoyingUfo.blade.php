@@ -53,13 +53,13 @@
 									<div class="col-8">
 										<div class="row">
 											<div class="col-4 p-0">
-												<img src="./assets/img/tmpXGrey.png" tid="1" imgN="1" width="100%">
+												<img src="/img/tmpXGrey.png" tid="1" imgN="1" width="100%">
 											</div>
 											<div class="col-4 p-0">
-												<img src="./assets/img/tmpXGrey.png" tid="1" imgN="2" width="100%">
+												<img src="/img/tmpXGrey.png" tid="1" imgN="2" width="100%">
 											</div>
 											<div class="col-4 p-0">
-												<img src="./assets/img/tmpXGrey.png" tid="1" imgN="3" width="100%">
+												<img src="/img/tmpXGrey.png" tid="1" imgN="3" width="100%">
 											</div>
 										</div>
 									</div>
