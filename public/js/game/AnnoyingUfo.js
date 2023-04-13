@@ -1,9 +1,10 @@
 $(document).ready(function(){
+	var xGreySrc = "./assets/img/tmpXGrey.png";
+	var xRedSrc = "./assets/img/tmpXLight.png";
 	var groupNum = 1;
 	$("#deleteGroup1").hide();
 	$("#groupList").on("click",".deleteGroup",function (){
 		tid = $(this).attr("tid");
-		// alert(tid);
 		$("div[id=groupItem"+tid+"]").fadeOut();//非常不好的操作，可能会给未来留下大坑！
 	});
 	$("#groupList").on("blur",".groupName",function(){
@@ -28,28 +29,58 @@ $(document).ready(function(){
 		tid = $(this).attr("tid");
 		$("button[id=deleteGroup"+tid+"]").fadeIn("fast");
 	});
-	$("#groupList").on("click",".scoreMinus",function(){
-		tid = $(this).attr("tid");
-		if( parseInt($("#score" + tid.toString()).html()) > 0) {
-			$("#score" + tid.toString()).html(parseInt($("#score" + tid.toString()).html()) - 1);
-		}
-	});
+	// $("#groupList").on("click",".scoreMinus",function(){
+	//     tid = $(this).attr("tid");
+	//     if( parseInt($("#score" + tid.toString()).html()) > 0) {
+	//         $("#score" + tid.toString()).html(parseInt($("#score" + tid.toString()).html()) - 1);
+	//     }
+	// });
 	$("#groupList").on("click",".scoreAdd",function(){
-		tid = $(this).attr("tid");
-		$("#score" + tid.toString()).html(parseInt($("#score" + tid.toString()).html()) + 1);
+		let tid = $(this).attr("tid");
+		let score = parseInt($("#groupItem"+tid.toString()).attr("score"));
+		// console.log("score",score,"tid",tid);
+		if(score <= 2){
+			score++;
+			$("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src",xRedSrc);
+			console.log($("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src"));
+			$("#groupItem"+tid.toString()).attr("score",score);
+		}
+
+		// $("#score" + tid.toString()).html(parseInt($("#score" + tid.toString()).html()) + 1);
 	});
 
 	$("#addGroup").click(function(){
 		groupNum++;
-		tid = groupNum.toString();
-		var newGroup = "<div class=\"list-group-item row py-3 lh-tight\" id=\"groupItem"+tid+"\">\n" +
-			"                        <div class='row justify-content-center'><div class='col-8'><input type=\"text\" class=\"groupName col-7 form-control\" placeholder='队伍名称...' id=\'groupName"+tid+"\' tid=\'"+tid+"\'></div>\n" +
-			"                        <div class=\"groupCount col-3 justify-content-center\">\n" +
-			"                            <button class=\"btn scoreMinus btn-danger\" id=\"scoreMinus1\" tid=\""+tid+"\"><h5 class='d-inline'>-</h5></button>\n" +
-			"                            <span><b class=\"score\" id=\"score"+tid+"\">0</b></span>\n    " +
-			"                            <button class=\"btn scoreAdd btn-success\" id=\"scoreAdd1\" tid=\""+tid+"\"><h5 class='d-inline'>+</h5></button>\n" +
-			"                        </div><div class=\"col-1\"><button class=\"btn deleteGroup\" id=\"deleteGroup"+tid+"\" tid=\""+tid+'\" display=\"none\"><i class="bi bi-x-circle"></i></button></div>'+"\n"+
-			"                    </div>";
+		let tid = groupNum.toString();
+		let newGroup = '<div class="list-group-item row py-3 lh-tight" id="groupItem'+tid+'" score="0">\n' +
+			'                        <div class="row">\n' +
+			'                        <div class="col-8"><input type="text" class="groupName form-control" id="groupName'+tid+'" placeholder="队伍名称..." tid="'+tid+'"></div>\n' +
+			'                        <div class="groupCount col-3">\n' +
+			'                            <div class="row">\n' +
+			'                                <div class="col-8">\n' +
+			'                                    <div class="row">\n' +
+			'                                        <div class="col-4 p-0">\n' +
+			'                                            <img src="'+xGreySrc+'" tid="'+tid+'" imgN="1" width="100%">\n' +
+			'                                        </div>\n' +
+			'                                        <div class="col-4 p-0">\n' +
+			'                                            <img src="'+xGreySrc+'" tid="'+tid+'" imgN="2" width="100%">\n' +
+			'                                        </div>\n' +
+			'                                        <div class="col-4 p-0">\n' +
+			'                                            <img src="'+xGreySrc+'" tid="'+tid+'" imgN="3" width="100%">\n' +
+			'                                        </div>\n' +
+			'                                    </div>\n' +
+			'                                </div>\n' +
+			'                                <div class="col-4">\n' +
+			'                                    <button class="btn btn-danger scoreAdd" id="scoreAdd'+tid+'" tid="'+tid+'">O</button>\n' +
+			'                                </div>\n' +
+			'                            </div>\n' +
+			'                        </div>\n' +
+			'                            <div class="col-1">\n' +
+			'                                <button class="btn deleteGroup" id="deleteGroup'+tid+'" tid="'+tid+'"><i class="bi bi-x-circle"></i></button>\n' +
+			'                            </div>\n' +
+			'                        </div>\n' +
+			'\n' +
+			'                    </div>';
 
 		$("#groupItem"+(groupNum-1).toString()).after(newGroup);
 		$("#groupName"+tid).focus();
@@ -80,8 +111,8 @@ $(document).ready(function(){
 			// console.log(timeCount);
 		}
 	});
-	$("#timerBegin").on("click",function(){
 
+	$("#timerBegin").on("click",function(){
 		if(isCounting==0) {
 			isCounting = 1;
 			timerBegin(timeCount, 5);

@@ -44,15 +44,34 @@
 				<a href="#" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
 					<span class="fs-5 fw-semibold">队伍</span>
 				</a>
-
 				<div class="list-group list-group-flush border-bottom scrollarea" id="groupList">
-					<div class="list-group-item row py-3 lh-tight" id="groupItem1">
+					<div class="list-group-item row py-3 lh-tight" id="groupItem1" score="0">
 						<div class="row">
 							<div class="col-8"><input type="text" class="groupName form-control" id="groupName1" placeholder="队伍名称..." tid="1"></div>
 							<div class="groupCount col-3">
-								<button class="btn scoreMinus btn-danger" id="scoreMinus1" tid="1"><h5 class="d-inline">-</h5></button>
-								<span><b class="score" id="score1">0</b></span>
-								<button class="btn scoreAdd btn-success" id="scoreAdd1" tid="1"><h5 class="d-inline">+</h5></button>
+								<div class="row">
+									<div class="col-8">
+										<div class="row">
+											<div class="col-4 p-0">
+												<img src="./assets/img/tmpXGrey.png" tid="1" imgN="1" width="100%">
+											</div>
+											<div class="col-4 p-0">
+												<img src="./assets/img/tmpXGrey.png" tid="1" imgN="2" width="100%">
+											</div>
+											<div class="col-4 p-0">
+												<img src="./assets/img/tmpXGrey.png" tid="1" imgN="3" width="100%">
+											</div>
+										</div>
+									</div>
+									<div class="col-4">
+										<button class="btn btn-danger scoreAdd" id="scoreAdd1" tid="1">O</button>
+									</div>
+								</div>
+								<!--                            <div>--><!--已经弃用的设计-->
+								<!--                                <button class="btn scoreMinus btn-danger" id="scoreMinus1" tid="1"><h5 class="d-inline">-</h5></button>-->
+								<!--                                <span><b class="score" id="score1">0</b></span>-->
+								<!--                                <button class="btn scoreAdd btn-success" id="scoreAdd1" tid="1"><h5 class="d-inline">+</h5></button>-->
+								<!--                            </div>-->
 							</div>
 							<div class="col-1">
 								<button class="btn deleteGroup" id="deleteGroup1" tid="1"><i class="bi bi-x-circle"></i></button>
