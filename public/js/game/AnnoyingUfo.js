@@ -116,9 +116,11 @@ $(document).ready(function(){
 		}
 	});
 
+	var timerButton = 1;
 	$("#timerBegin").on("click",function(){
-		if(isCounting==0) {
+		if(isCounting==0 && timerButton == 1) {
 			isCounting = 1;
+			timerButton = 0;
 			timerBegin(timeCount, 5);
 			$("#timerBegin").html("<i class=\"bi bi-arrow-clockwise\"></i>");
 			$("#timerBegin").removeClass("btn-success");
@@ -133,12 +135,12 @@ $(document).ready(function(){
 					$("#linesText").html(data);
 				}
 			);
-		}else{
+		}else if(isCounting == 1 || timerButton == 0){
 			$("#timerBegin").html("<i class=\"bi bi-play\"></i>");
 			$("#timerBegin").removeClass("btn-danger");
 			$("#timerBegin").addClass("btn-success");
 			timerReset();
-
+			timerButton = 1;
 		}
 	});
 	// $("#timerReset").on("click",function(){
