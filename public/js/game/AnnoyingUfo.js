@@ -56,10 +56,10 @@ $(document).ready(function(){
 	$("#addGroup").click(function(){
 		groupNum++;
 		let tid = groupNum.toString();
-		let newGroup = '<div class="list-group-item row py-3 lh-tight" id="groupItem'+tid+'" score="0">\n' +
+		let newGroup = '<div class="list-group-item row py-3 lh-tight groupItem" id="groupItem'+tid+'" score="0">\n' +
 			'                        <div class="row">\n' +
-			'                        <div class="col-8"><input type="text" class="groupName form-control" id="groupName'+tid+'" placeholder="队伍名称..." tid="'+tid+'"></div>\n' +
-			'                        <div class="groupCount col-3">\n' +
+			'                        <div class="col-6"><input type="text" class="groupName form-control" id="groupName'+tid+'" placeholder="队伍名称..." tid="'+tid+'"></div>\n' +
+			'                        <div class="groupCount col-5">\n' +
 			'                            <div class="row">\n' +
 			'                                <div class="col-8">\n' +
 			'                                    <div class="row">\n' +

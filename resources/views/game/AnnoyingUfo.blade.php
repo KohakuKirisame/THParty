@@ -51,10 +51,10 @@
 					<span class="fs-5 fw-semibold">队伍 &nbsp</span><button id="groupReset" class="btn"><i class="bi-arrow-clockwise"></i></button>
 				</a>
 				<div class="list-group list-group-flush border-bottom scrollarea" id="groupList">
-					<div class="list-group-item row py-3 lh-tight" id="groupItem1" score="0">
+					<div class="list-group-item row py-3 lh-tight groupItem" id="groupItem1" score="0">
 						<div class="row">
-							<div class="col-8"><input type="text" class="groupName form-control" id="groupName1" placeholder="队伍名称..." tid="1"></div>
-							<div class="groupCount col-3">
+							<div class="col-6"><input type="text" class="groupName form-control" id="groupName1" placeholder="队伍名称..." tid="1"></div>
+							<div class="groupCount col-5">
 								<div class="row">
 									<div class="col-8">
 										<div class="row">
@@ -89,7 +89,7 @@
 
 					<div class="list-group-item row py-3 lh-tight">
 						<button class="btn col-12 btn-info" id="addGroup">
-							+
+							<b>+</b>
 						</button>
 					</div>
 
