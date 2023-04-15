@@ -1,6 +1,6 @@
 $(document).ready(function(){
-	var xGreySrc = "/img/tmpXGrey.png";
-	var xRedSrc = "/img/tmpXLight.png";
+	var xGreySrc = "/img/full.png";
+	var xRedSrc = "/img/empty.png";
 	var groupNum = 1;
 	$("#deleteGroup1").hide();
 	$("#groupList").on("click",".deleteGroup",function (){
@@ -39,9 +39,10 @@ $(document).ready(function(){
 		let tid = $(this).attr("tid");
 		let score = parseInt($("#groupItem"+tid.toString()).attr("score"));
 		// console.log("score",score,"tid",tid);
-		if(score <= 2){
-			score++;
+		if(score >= 1){
+
 			$("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src",xRedSrc);
+			score--;
 			// console.log($("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src"));
 			$("#groupItem"+tid.toString()).attr("score",score);
 		}
@@ -56,7 +57,7 @@ $(document).ready(function(){
 	$("#addGroup").click(function(){
 		groupNum++;
 		let tid = groupNum.toString();
-		let newGroup = '<div class="list-group-item row py-3 lh-tight groupItem" id="groupItem'+tid+'" score="0">\n' +
+		let newGroup = '<div class="list-group-item row py-3 lh-tight groupItem" id="groupItem'+tid+'" score="3">\n' +
 			'                        <div class="row">\n' +
 			'                        <div class="col-6"><input type="text" class="groupName form-control" id="groupName'+tid+'" placeholder="队伍名称..." tid="'+tid+'"></div>\n' +
 			'                        <div class="groupCount col-5">\n' +
