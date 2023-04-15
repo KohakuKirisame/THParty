@@ -42,7 +42,7 @@ $(document).ready(function(){
 		if(score <= 2){
 			score++;
 			$("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src",xRedSrc);
-			console.log($("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src"));
+			// console.log($("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src"));
 			$("#groupItem"+tid.toString()).attr("score",score);
 		}
 

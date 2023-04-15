@@ -13,19 +13,25 @@
 	<div class="row">
 		<div class="col-sm-12 col-lg-6">
 			<div class="row" id="timerDiv">
-				<div class="col-7" style="text-align:center">
-					<h1 class="display-1" id="timerShow">15</h1>
+				<div class="col-2">
+					<a href="javascript:" class="btn btn-primary" onClick="javascript :history.back(-1);">返回</a>
+				</div>
+				<div class="col-5" style="text-align:center">
+
+					<h1 class="display-1 d-inline" id="timerShow">15</h1>
 				</div>
 				<div class="col-5">
 					<div class="row">
-						<div class="col-4"><input type="number" class="form-control" value="15" min="0" id="timerSet"></div>
-						<div class="col-8">
-							<button id="timerChange" class="btn btn-outline-dark" setting="1"><i class="bi bi-pencil-square"></i></button>
-							<button class="btn btn-success" id="timerBegin"><i class="bi bi-play"></i></button>
+
+						<div class="col-4">
+							<div class="row p-1"><button id="timerChange" class="btn btn-outline-dark btn-lg" setting="1"><i class="bi bi-pencil-square"></i></button>
+							</div>
+							<div class="row p-1"><button class="btn btn-success btn-lg" id="timerBegin"><i class="bi bi-play"></i></button>
+							</div>
 							<!--                            <button id="timerFinishSet" class="btn btn-outline-dark"><i class="bi bi-check"></i></button>-->
 							<!--                            <button id="timerReset" class="btn btn-outline-dark"><i class="bi bi-arrow-clockwise"></i></button>-->
 						</div>
-
+						<div class="col-8"><div class="row"><div class="col-lg-9 col-xl-7 col-8"><input type="number" class="form-control" value="15" min="0" id="timerSet"></div></div></div>
 					</div>
 					<div class="row">
 						<div class="col-4"></div>
