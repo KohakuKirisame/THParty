@@ -53,7 +53,7 @@
 			</div>
 			<div class="row"><h1 class="display-1" id="linesText">等待开始...</h1></div>
 		</div>
-		<div class="col-sm-12 col-lg-6 my-sm-3" id="part2">
+		<div class="col-sm-12 col-lg-6 my-sm-3 card	" id="part2">
 			<div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white">
 				<div class="row">
 					<div class="col-12">
