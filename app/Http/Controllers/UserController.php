@@ -141,7 +141,13 @@ class UserController extends BaseController{
 				$request->session()->forget('code');
 				$request->session()->forget('phone');
 				$request->session()->regenerate();
-				return back();
+				if($request->session()->has('urlPrevious')){
+					$url=$request->session()->get('urlPrevious');
+					$request->session()->forget('urlPrevious');
+					return redirect($url);
+				}else{
+					return redirect('/');
+				}
 			}
 			//注册失败，返回上一页
 			return back()->withErrors([

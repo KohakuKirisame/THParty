@@ -128,6 +128,11 @@ $(document).ready(function(){
 			$("#timerBegin").addClass("btn-danger");
 			var _token = $("meta[name='csrf-token']").attr("content");
 			var room=$("meta[name='room']").attr("content");
+			$.ajaxSetup({
+				headers: {
+					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+				}
+			});
 			$.post("/Actions/Game/AnnoyingUfo",{
 					_token: _token,
 					room: room,

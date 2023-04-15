@@ -106,7 +106,7 @@
 						<div class="card shadow-lg kirisame-bg">
 							<div class="card-body">
 								<h5 class="card-title">互动</h5>
-								<p class="display-5 text-center ps-2">5</p>
+								<p class="display-5 text-center ps-2">{{$rooms->count()}}</p>
 							</div>
 						</div>
 					</div>
@@ -201,14 +201,14 @@
 					<div class="card col-12 shadow-lg kirisame-bg">
 						<div class="card-body">
 							<h5 class="card-title">互动游戏</h5>
-							<div class="accordion my-3" id="showList">
+							<div class="accordion my-3" id="gameList">
 								@foreach($rooms as $room)
 									@if($room->is_active==1)
 										<div class="accordion-item">
-											<h2 class="accordion-header" id="showTitle-{{$room->id}}">
-												<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#showContent-{{$room->id}}" aria-expanded="false" aria-controls="showContent-{{$room->id}}">{{$room->game_info->name}}</button>
+											<h2 class="accordion-header" id="gameTitle-{{$room->id}}">
+												<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#gameContent-{{$room->id}}" aria-expanded="false" aria-controls="gameContent-{{$room->id}}">{{$room->game_info->name}}</button>
 											</h2>
-											<div id="showContent-{{$room->id}}" class="accordion-collapse collapse" aria-labelledby="showTitle-{{$room->id}}">
+											<div id="gameContent-{{$room->id}}" class="accordion-collapse collapse" aria-labelledby="gameTitle-{{$room->id}}">
 												<div class="accordion-body">
 													<p style="white-space: pre-line">{{$room->game_info->rule}}</p>
 													<div class="row my-2 justify-content-center">
@@ -217,15 +217,15 @@
 																@if($room->is_started==0)
 																<a class="col m-2 btn btn-outline-success">开始游戏</a>
 																@else
-																	<a class="col m-2 btn btn-outline-success">开始游戏</a>
-																	<a class="col m-2 btn btn-outline-danger">结束游戏</a>
+																	<a class="col m-2 btn btn-outline-success" href="/Game/{{$room->id}}" target="_blank">开始游戏</a>
+																	<a class="col m-2 btn btn-outline-danger" href="#">结束游戏</a>
 																@endif
 															@else
 																@if($room->is_started==0)
 																	<p class="col m-2 text-secondary">游戏未开始</p>
 																@else
 																	@if($room->game_info->is_public==1)
-																		<a class="col m-2 btn btn-outline-success">进入游戏</a>
+																		<a class="col m-2 btn btn-outline-success" href="/Game/{{$room->id}}" target="_blank">进入游戏</a>
 																	@else
 																		<p class="col m-2 text-secondary">该游戏由主持人操作</p>
 																	@endif
