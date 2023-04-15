@@ -58,7 +58,7 @@ $(document).ready(function(){
 	$("#addGroup").click(function(){
 		groupNum++;
 		let tid = groupNum.toString();
-		let newGroup = '<div class="list-group-item row py-3 lh-tight groupItem d-flex" id="groupItem'+tid+'" score="3">\n' +
+		let newGroup = '<div class="list-group-item py-3 lh-tight groupItem" id="groupItem'+tid+'" score="3">\n' +
 			'                        <div class="row d-flex">\n' +
 			'                        <div class="col-6 d-flex"><input type="text" class="groupName form-control align-items-center" id="groupName'+tid+'" placeholder="队伍名称..." tid="'+tid+'"></div>\n' +
 			'                        <div class="groupCount col-5">\n' +
