@@ -15,7 +15,6 @@ $(document).ready(function(){
 		var t=1;
 		var countDown = setInterval(function () {
 			if (t == 0) {
-				// doing some alarm;
 				$("button[id=deleteGroup"+tid+"]").fadeOut();
 				clearInterval(countDown);
 				return 0;
@@ -30,24 +29,14 @@ $(document).ready(function(){
 		tid = $(this).attr("tid");
 		$("button[id=deleteGroup"+tid+"]").fadeIn("fast");
 	});
-	// $("#groupList").on("click",".scoreMinus",function(){
-	//     tid = $(this).attr("tid");
-	//     if( parseInt($("#score" + tid.toString()).html()) > 0) {
-	//         $("#score" + tid.toString()).html(parseInt($("#score" + tid.toString()).html()) - 1);
-	//     }
-	// });
 	$("#groupList").on("click",".scoreAdd",function(){
 		let tid = $(this).attr("tid");
 		let score = parseInt($("#groupItem"+tid.toString()).attr("score"));
-		// console.log("score",score,"tid",tid);
 		if(score >= 1){
 			$("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src",xRedSrc);
 			score--;
-			// console.log($("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src"));
 			$("#groupItem"+tid.toString()).attr("score",score);
 		}
-
-		// $("#score" + tid.toString()).html(parseInt($("#score" + tid.toString()).html()) + 1);
 	});
 	$("#groupReset").on("click",function (){
 		for(let i=1;i<=groupNum;i++){
@@ -102,19 +91,14 @@ $(document).ready(function(){
 	$("#timerChange").on("click",function (){
 		if($(this).attr("setting")==='1'){
 			$(this).attr("setting","0");
-			// $(this).addClass("btn-success");
-			// $(this).removeClass("btn-outline-dark");
 			$("#timerSet").fadeIn("fast");
 			$(this).html("<i class=\"bi bi-check-lg\"></i>");
 		}else if($(this).attr("setting")==='0'){
 			$("#timerSet").fadeOut();
 			$(this).attr("setting","1");
-			// $(this).removeClass("btn-success");
-			// $(this).addClass("btn-outline-dark");
 			$(this).html("<i class=\"bi bi-pencil-square\"></i>");
 			timeCount = $("#timerSet").val();
 			$("#timerShow").html(timeCount);
-			// console.log(timeCount);
 		}
 	});
 	var timerButton = 1;

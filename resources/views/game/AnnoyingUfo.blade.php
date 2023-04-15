@@ -87,20 +87,12 @@
 										<button class="btn btn-lg btn-danger scoreAdd" id="scoreAdd1" tid="1">O</button>
 									</div>
 								</div>
-								<!--                            <div>--><!--已经弃用的设计-->
-								<!--                                <button class="btn scoreMinus btn-danger" id="scoreMinus1" tid="1"><h5 class="d-inline">-</h5></button>-->
-								<!--                                <span><b class="score" id="score1">0</b></span>-->
-								<!--                                <button class="btn scoreAdd btn-success" id="scoreAdd1" tid="1"><h5 class="d-inline">+</h5></button>-->
-								<!--                            </div>-->
 							</div>
 							<div class="col-1 align-items-center d-flex">
 								<button class="btn deleteGroup" id="deleteGroup1" tid="1"><i class="bi bi-x-circle"></i></button>
 							</div>
 						</div>
-
 					</div>
-
-
 					<div class="list-group-item py-3 lh-tight">
 						<button class="btn col-12 btn-info" id="addGroup">
 							<b>+</b>
