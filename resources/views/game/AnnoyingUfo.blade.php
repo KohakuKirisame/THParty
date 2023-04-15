@@ -7,6 +7,12 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 	<script type="application/javascript" src="{{asset("js/game/AnnoyingUfo.js")}}"></script>
 	<meta name="room" content="{{$room->id}}">
+	<style>
+		.groupName{
+			font-size:19px;
+			font-weight:600;
+		}
+	</style>
 </head>
 <body>
 <div class="container my-5">
@@ -48,12 +54,13 @@
 		<div class="col-sm-12 col-lg-6 my-sm-3">
 			<div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white">
 				<a href="#" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
-					<span class="fs-5 fw-semibold">队伍 &nbsp</span><button id="groupReset" class="btn"><i class="bi-arrow-clockwise"></i></button>
+					<span class="fs-3 fw-semibold">队伍 &nbsp</span><button id="groupReset" class="btn"><i class="bi-arrow-clockwise"></i></button>
 				</a>
+
 				<div class="list-group list-group-flush border-bottom scrollarea" id="groupList">
-					<div class="list-group-item row py-3 lh-tight groupItem" id="groupItem1" score="3">
-						<div class="row">
-							<div class="col-6"><input type="text" class="groupName form-control" id="groupName1" placeholder="队伍名称..." tid="1"></div>
+					<div class="list-group-item row py-3 lh-tight groupItem d-flex" id="groupItem1" score="3">
+						<div class="row d-flex">
+							<div class="col-6 d-flex"><input type="text" class="groupName form-control input-large input align-items-center" id="groupName1" placeholder="队伍名称..." tid="1"></div>
 							<div class="groupCount col-5">
 								<div class="row">
 									<div class="col-8">
@@ -69,8 +76,8 @@
 											</div>
 										</div>
 									</div>
-									<div class="col-4">
-										<button class="btn btn-danger scoreAdd" id="scoreAdd1" tid="1">O</button>
+									<div class="col-4 d-flex align-items-center">
+										<button class="btn btn-lg btn-danger scoreAdd" id="scoreAdd1" tid="1">O</button>
 									</div>
 								</div>
 								<!--                            <div>--><!--已经弃用的设计-->
@@ -79,7 +86,7 @@
 								<!--                                <button class="btn scoreAdd btn-success" id="scoreAdd1" tid="1"><h5 class="d-inline">+</h5></button>-->
 								<!--                            </div>-->
 							</div>
-							<div class="col-1">
+							<div class="col-1 align-items-center d-flex">
 								<button class="btn deleteGroup" id="deleteGroup1" tid="1"><i class="bi bi-x-circle"></i></button>
 							</div>
 						</div>

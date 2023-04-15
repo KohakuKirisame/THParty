@@ -1,11 +1,12 @@
 $(document).ready(function(){
-	var xGreySrc = "/img/full.png";
-	var xRedSrc = "/img/empty.png";
+	var xGreySrc = "./assets/img/full.png";
+	var xRedSrc = "./assets/img/empty.png";
 	var groupNum = 1;
 	$("#deleteGroup1").hide();
 	$("#groupList").on("click",".deleteGroup",function (){
 		tid = $(this).attr("tid");
-		$("div[id=groupItem"+tid+"]").fadeOut();//非常不好的操作，可能会给未来留下大坑！
+		$("div[id=groupItem"+tid+"]").removeClass("d-flex");//非常不好的操作，可能会给未来留下大坑！
+		$("div[id=groupItem"+tid+"]").fadeOut();
 	});
 	$("#groupList").on("blur",".groupName",function(){
 		$(this).removeClass("form-control");
@@ -40,7 +41,6 @@ $(document).ready(function(){
 		let score = parseInt($("#groupItem"+tid.toString()).attr("score"));
 		// console.log("score",score,"tid",tid);
 		if(score >= 1){
-
 			$("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src",xRedSrc);
 			score--;
 			// console.log($("img[tid="+tid.toString()+"]img[imgN="+score+"]").attr("src"));
@@ -51,15 +51,16 @@ $(document).ready(function(){
 	});
 	$("#groupReset").on("click",function (){
 		for(let i=1;i<=groupNum;i++){
+			$("div[id=groupItem"+i+"]").removeClass("d-flex");
 			$("div[id=groupItem"+i+"]").fadeOut();
 		}
 	});
 	$("#addGroup").click(function(){
 		groupNum++;
 		let tid = groupNum.toString();
-		let newGroup = '<div class="list-group-item row py-3 lh-tight groupItem" id="groupItem'+tid+'" score="3">\n' +
-			'                        <div class="row">\n' +
-			'                        <div class="col-6"><input type="text" class="groupName form-control" id="groupName'+tid+'" placeholder="队伍名称..." tid="'+tid+'"></div>\n' +
+		let newGroup = '<div class="list-group-item row py-3 lh-tight groupItem d-flex" id="groupItem'+tid+'" score="3">\n' +
+			'                        <div class="row d-flex">\n' +
+			'                        <div class="col-6 d-flex"><input type="text" class="groupName form-control align-items-center" id="groupName'+tid+'" placeholder="队伍名称..." tid="'+tid+'"></div>\n' +
 			'                        <div class="groupCount col-5">\n' +
 			'                            <div class="row">\n' +
 			'                                <div class="col-8">\n' +
@@ -75,12 +76,12 @@ $(document).ready(function(){
 			'                                        </div>\n' +
 			'                                    </div>\n' +
 			'                                </div>\n' +
-			'                                <div class="col-4">\n' +
-			'                                    <button class="btn btn-danger scoreAdd" id="scoreAdd'+tid+'" tid="'+tid+'">O</button>\n' +
+			'                                <div class="col-4 d-flex align-items-center">\n' +
+			'                                    <button class="btn btn-lg btn-danger scoreAdd" id="scoreAdd'+tid+'" tid="'+tid+'">O</button>\n' +
 			'                                </div>\n' +
 			'                            </div>\n' +
 			'                        </div>\n' +
-			'                            <div class="col-1">\n' +
+			'                            <div class="col-1 align-items-center d-flex">\n' +
 			'                                <button class="btn deleteGroup" id="deleteGroup'+tid+'" tid="'+tid+'"><i class="bi bi-x-circle"></i></button>\n' +
 			'                            </div>\n' +
 			'                        </div>\n' +
@@ -116,7 +117,6 @@ $(document).ready(function(){
 			// console.log(timeCount);
 		}
 	});
-
 	var timerButton = 1;
 	$("#timerBegin").on("click",function(){
 		if(isCounting==0 && timerButton == 1) {
@@ -161,6 +161,7 @@ $(document).ready(function(){
 				// doing some alarm;
 				clearInterval(countDown);
 				isCounting = 0;
+
 				return 0;
 			}
 			if (t == redTime){
